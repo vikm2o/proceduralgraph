@@ -4,13 +4,19 @@ version: 1.0
 date_created: 2026-09-18
 last_updated: 2026-09-18
 owner: ProceduralGraph maintainers; generation-agent maintainers own subsequent adoption
-status: 'Planned'
+status: 'Released upstream (0.3.2); consumer adoption pending'
 tags: [feature, proceduralgraph, objectives, evaluation, upstream-handoff]
 ---
 
 # Introduction
 
-![Status: Planned](https://img.shields.io/badge/status-Planned-blue)
+> **Upstream release delivered 2026-09-18.** Version `0.3.2`, tag `0.3.2`, commit `7b2a011`. Wheel SHA-256
+> `8d54f101403a09694026394d6401aa4e5a954d3f48e723e6f1f92820a43c27b8`, sdist SHA-256
+> `c1dc72cbcec6b773864b3784406bde9d751c13f4bf2f73b535f6852399f3481c`. 136 tests, 0 skipped (PostgreSQL and S3
+> contract tests ran). Tags `0.3.0` and `0.3.1` are mis-pointed and are not releases (see `CHANGELOG.md`).
+> Phase 4 (TASK-007 to TASK-009) is generation-agent's adoption work and remains open.
+
+![Status: Released upstream](https://img.shields.io/badge/status-Released%20upstream%200.3.2-green)
 
 **Handoff to the ProceduralGraph implementation agent.** Implement this requirement in
 `vikm2o/proceduralgraph`, test it, and deliver a new immutable tagged release with the
@@ -234,8 +240,8 @@ Illustrative decisions below assume adequate evidence and passing absolute const
 
 | Task | Description | Completed | Date |
 | --- | --- | --- | --- |
-| TASK-001 | Add `objectives.py` contracts and serialization; extend `traces.TaskOutcome`, `gates.Evaluation`, and `config.EvolveConfig` with optional objective data; export public types in `__init__.py`. Satisfy REQ-001–006 and REQ-018. | false | — |
-| TASK-002 | Implement `gates.ObjectiveGate.decide` and bounded paired interval helpers using REQ-007–014; add `tests/test_objectives.py` and `tests/test_objective_gates.py`. Depends on TASK-001. | false | — |
+| TASK-001 | Add `objectives.py` contracts and serialization; extend `traces.TaskOutcome`, `gates.Evaluation`, and `config.EvolveConfig` with optional objective data; export public types in `__init__.py`. Satisfy REQ-001–006 and REQ-018. | true | 2026-09-18 |
+| TASK-002 | Implement `gates.ObjectiveGate.decide` and bounded paired interval helpers using REQ-007–014; add `tests/test_objectives.py` and `tests/test_objective_gates.py`. Depends on TASK-001. | true | 2026-09-18 |
 
 ### Implementation Phase 2
 
@@ -245,8 +251,8 @@ Illustrative decisions below assume adequate evidence and passing absolute const
 
 | Task | Description | Completed | Date |
 | --- | --- | --- | --- |
-| TASK-003 | Extend `harness.evolve`, `rejections.RejectionEntry`, `hooks.IterationReport`, and checkpoint/revision metadata with objective context and decision feedback, including recovery after graph acceptance. Add `tests/test_objective_resume.py`. Satisfy REQ-016–018. | false | — |
-| TASK-004 | Extend `roles/refiner.py`, `traces.Trace.rendered`, rejection renderings, and CLI export views; add scripted `examples/objective_evolution.py` and refiner/end-to-end tests. Satisfy REQ-015, REQ-016, and REQ-020. | false | — |
+| TASK-003 | Extend `harness.evolve`, `rejections.RejectionEntry`, `hooks.IterationReport`, and checkpoint/revision metadata with objective context and decision feedback, including recovery after graph acceptance. Add `tests/test_objective_resume.py`. Satisfy REQ-016–018. | true | 2026-09-18 |
+| TASK-004 | Extend `roles/refiner.py`, `traces.Trace.rendered`, rejection renderings, and CLI export views; add scripted `examples/objective_evolution.py` and refiner/end-to-end tests. Satisfy REQ-015, REQ-016, and REQ-020. | true | 2026-09-18 |
 
 ### Implementation Phase 3
 
@@ -256,8 +262,8 @@ Illustrative decisions below assume adequate evidence and passing absolute const
 
 | Task | Description | Completed | Date |
 | --- | --- | --- | --- |
-| TASK-005 | Run upstream lint, full tests, offline example, package build, and clean-wheel smoke. Update `README.md`, `docs/host-integration.md`, `docs/paper-differences.md`, `CHANGELOG.md`, and package version with compatibility/migration details. | false | — |
-| TASK-006 | Create the new release under the repository release workflow and supply tag, commit, artifact hashes, verification evidence, known limitations, and requirement-to-test mapping. Satisfy REQ-019. | false | — |
+| TASK-005 | Run upstream lint, full tests, offline example, package build, and clean-wheel smoke. Update `README.md`, `docs/host-integration.md`, `docs/paper-differences.md`, `CHANGELOG.md`, and package version with compatibility/migration details. | true | 2026-09-18 |
+| TASK-006 | Create the new release under the repository release workflow and supply tag, commit, artifact hashes, verification evidence, known limitations, and requirement-to-test mapping. Satisfy REQ-019. | true | 2026-09-18 |
 
 ### Implementation Phase 4
 
