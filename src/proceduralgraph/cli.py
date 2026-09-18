@@ -2,6 +2,7 @@
 """``proceduralgraph``: initialise, inspect and export a workspace held in a revision store (H8).
 
     proceduralgraph --store file:./workspace --workspace default init --graph expert.json
+    proceduralgraph --store file:./workspace --workspace default init --from-text problem.md --solutions ./solved --tools search,read,answer --model anthropic:claude-sonnet-5
     proceduralgraph --store file:./workspace --workspace default show
     proceduralgraph --store postgres:postgresql+asyncpg://user:pw@host/db --workspace tenant-a export ./out
     proceduralgraph --store file:./workspace guide --query "who wrote X?" --step search --step read
@@ -20,9 +21,12 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from .config import CYCLE_POLICIES, EvolveConfig
 from .edits import unified_diff
 from .graph import Graph, GraphError
 from .guidance import GuidanceConfig, Guide, steps_from_actions
+from .model import ChatModel, ScriptedChatModel
+from .roles.bootstrap import bootstrap_graph
 from .stores.base import RevisionStore
 from .stores.file import FileRevisionStore, export_workspace
 from .stores.revision import CHAIN_KINDS, GRAPH, RevisionGraphStore, RevisionRejectionStore
@@ -51,6 +55,33 @@ def open_store(spec: str) -> RevisionStore:
     raise CliError(f"unsupported store {spec!r}: use file:DIR or postgres:URL")
 
 
+def open_model(spec: str) -> ChatModel:
+    """``anthropic:MODEL_ID``, ``openai:MODEL_ID`` (each needs its extra), or ``scripted:FILE`` (a JSON list of replies,
+    for offline demos and tests)."""
+    scheme, _, target = spec.partition(":")
+    if scheme in ("anthropic", "openai") and target:
+        try:
+            if scheme == "anthropic":
+                from .adapters.anthropic import AnthropicChatModel as Adapter
+            else:
+                from .adapters.openai import OpenAIChatModel as Adapter
+        except ModuleNotFoundError as exc:
+            raise CliError(f"the {scheme} model needs the extra: pip install 'proceduralgraph[{scheme}]'") from exc
+        try:
+            return Adapter(target)
+        except Exception as exc:  # the SDK refuses to construct: usually a missing API key in the environment
+            raise CliError(f"cannot create the {scheme} client for {target!r}: {exc}") from exc
+    if scheme == "scripted" and target:
+        try:
+            replies = json.loads(Path(target).read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise CliError(f"cannot read scripted replies from {target}: {exc}") from exc
+        if not isinstance(replies, list) or not all(isinstance(r, str) for r in replies):
+            raise CliError(f"{target} must hold a JSON list of reply strings")
+        return ScriptedChatModel(replies)
+    raise CliError(f"unsupported model {spec!r}: use anthropic:MODEL, openai:MODEL or scripted:FILE")
+
+
 async def _heads(store: RevisionStore, workspace: str):
     graph_ref, graph = await RevisionGraphStore(store, workspace).load()
     rejections_ref, memory = await RevisionRejectionStore(store, workspace).load()
@@ -63,18 +94,70 @@ async def cmd_init(store: RevisionStore, args: argparse.Namespace) -> str:
     if ref is not None:
         raise CliError(f"workspace {args.workspace!r} already has a graph ({ref[:12]}); use a new workspace or `transfer`")
     notes = []
+    extra_meta: dict = {}
+    if args.graph and args.from_text:
+        raise CliError("use either --graph FILE or --from-text FILE, not both")
     if args.graph:
         try:
             graph, notes = Graph.from_human(Path(args.graph))
         except (GraphError, OSError, ValueError) as exc:
             raise CliError(f"cannot load {args.graph}: {exc}") from exc
         origin = "skeleton" if graph.is_skeleton else "onboarded"
+    elif args.from_text:
+        problem, solutions, tools = _bootstrap_inputs(args)
+        model = open_model(args.model)
+        config = EvolveConfig(role_retries=args.retries, cycle_policy=args.cycle_policy)
+        try:
+            result = await bootstrap_graph(problem_statement=problem, model=model, solutions=solutions, tools=tools, config=config)
+        except ValueError as exc:  # empty problem statement, or neither tools nor solutions
+            raise CliError(str(exc)) from exc
+        except Exception as exc:  # the provider failed (auth, network, quota)
+            raise CliError(f"the model call failed: {type(exc).__name__}: {exc}") from exc
+        if result.graph is None:
+            raise CliError(result.refusal())
+        graph, origin = result.graph, result.seed_meta()["origin"]
+        notes = [d for d in result.diagnostics if not d.is_error]
+        extra_meta = {k: v for k, v in result.seed_meta().items() if k != "origin"}
     else:
+        if args.solutions or args.tools or args.model:
+            raise CliError("--solutions, --tools and --model only apply with --from-text")
         graph, origin = Graph.skeleton(), "skeleton"
-    digest = await graph_store.seed(graph, meta={"origin": origin})
+    digest = await graph_store.seed(graph, meta={"origin": origin, **extra_meta})
     lines = [f"{args.workspace}: seeded graph {digest[:12]} ({origin}) with {len(graph.nodes)} node(s), {len(graph.edges)} edge(s)"]
+    if origin == "bootstrapped":
+        lines.append(f"bootstrapped from {args.from_text} with {extra_meta['solutions']} worked solution(s); "
+                     "this is a starting point, not a validated graph: the first evolve run scores it as the baseline")
     lines += [f"warning: {note}" for note in notes]
     return "\n".join(lines)
+
+
+def _bootstrap_inputs(args: argparse.Namespace) -> tuple[str, list[str], list[str] | None]:
+    """Read the problem statement, the solutions directory and the tool list for ``init --from-text``; every failure is a
+    plain ``CliError``."""
+    if not args.model:
+        raise CliError("--from-text needs --model (anthropic:MODEL, openai:MODEL or scripted:FILE)")
+    try:
+        problem = Path(args.from_text).read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        raise CliError(f"cannot read the problem statement {args.from_text}: {exc}") from exc
+    if not problem.strip():
+        raise CliError(f"the problem statement {args.from_text} is empty")
+    solutions: list[str] = []
+    if args.solutions:
+        folder = Path(args.solutions)
+        if not folder.is_dir():
+            raise CliError(f"--solutions must be a directory of text files: {folder}")
+        for path in sorted(p for p in folder.iterdir() if p.is_file() and not p.name.startswith(".")):
+            try:
+                solutions.append(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError) as exc:
+                raise CliError(f"cannot read the solution {path}: {exc} (solutions must be UTF-8 text files)") from exc
+        if not solutions:
+            raise CliError(f"--solutions directory {folder} holds no text files")
+    tools = [t.strip() for chunk in (args.tools or []) for t in chunk.split(",") if t.strip()] or None
+    if not solutions and not tools:
+        raise CliError("--from-text without --solutions needs --tools: the refiner has nothing to build ACTION nodes from")
+    return problem, solutions, tools
 
 
 async def cmd_show(store: RevisionStore, args: argparse.Namespace) -> str:
@@ -173,8 +256,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--store", required=True, help="file:DIR or postgres:URL")
     parser.add_argument("--workspace", default="default")
     sub = parser.add_subparsers(dest="command", required=True)
-    init = sub.add_parser("init", help="seed an empty workspace from a hand-written graph JSON, or the Start → End skeleton")
+    init = sub.add_parser("init", help="seed an empty workspace: from a hand-written graph JSON, from a problem statement via a model, or the Start → End skeleton")
     init.add_argument("--graph", help="path to a graph JSON in the refiner shape ({nodes, edges})")
+    init.add_argument("--from-text", help="path to a problem statement; the refiner bootstraps a graph from it (needs --model)")
+    init.add_argument("--solutions", help="directory of worked-solution text files, each presented to the refiner as a successful trajectory")
+    init.add_argument("--tools", action="append", help="tool / action names the agent can execute; repeatable or comma-separated")
+    init.add_argument("--model", help="anthropic:MODEL, openai:MODEL or scripted:FILE (a JSON list of replies)")
+    init.add_argument("--retries", type=int, default=1, help="refiner retries with diagnostics fed back (0 = paper-exact)")
+    init.add_argument("--cycle-policy", choices=CYCLE_POLICIES, default="repair", help="PrepareCandidate's cycle policy for the bootstrap")
     init.set_defaults(run=cmd_init)
     show = sub.add_parser("show", help="node/edge counts, head digest, last validation score, recent rejection lines")
     show.add_argument("--tail", type=int, default=10)

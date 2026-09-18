@@ -33,6 +33,7 @@ from .hooks import BudgetExceeded, BudgetMeter, HookedModel, Hooks, IterationRep
 from .model import ChatModel, ImagePart
 from .redaction import Redactor, redact_trace
 from .rejections import RejectionEntry, RejectionMemory
+from .roles.bootstrap import BootstrapResult
 from .roles.refiner import Refiner
 from .stores.base import CheckpointStore, GraphStore, NullCheckpointStore, NullTraceStore, RejectionStore, TraceStore
 from .traces import Trace, TraceSource, render_attempts_block, stratified_sample
@@ -84,18 +85,23 @@ def resolve_mode(config_mode: str, graph: Graph) -> str:
     return "scratch_incremental" if graph.is_skeleton else "static_incremental"
 
 
-def coerce_initial_graph(value: Graph | dict[str, Any] | Path | None) -> tuple[Graph, str, list[Diagnostic]]:
-    """G1a: ``None`` (or an empty document) is the skeleton; a ``Graph`` is validated as is; a dict or path goes
-    through :meth:`Graph.from_human`. Returns (graph, origin, warnings)."""
+def coerce_initial_graph(value: Graph | BootstrapResult | dict[str, Any] | Path | None) -> tuple[Graph, dict[str, Any], list[Diagnostic]]:
+    """G1a: ``None`` (or an empty document) is the skeleton; a ``Graph`` is validated as is; a ``BootstrapResult`` is
+    its graph with ``origin: bootstrapped`` and the bootstrap's meta (§2.19); a dict or path goes through
+    :meth:`Graph.from_human`. Returns (graph, seed meta, warnings)."""
     if value is None:
-        return Graph.skeleton(), "skeleton", []
+        return Graph.skeleton(), {"origin": "skeleton"}, []
+    if isinstance(value, BootstrapResult):
+        if value.graph is None:
+            raise GraphError(value.diagnostics, value.refusal())
+        return value.graph, value.seed_meta(), [d for d in value.diagnostics if not d.is_error]
     if isinstance(value, Graph):
         found = value.validate()
         if errors(found):
             raise GraphError(errors(found), "initial_graph fails the structural checks: " + "; ".join(str(d) for d in errors(found)))
-        return value, ("skeleton" if value.is_skeleton else "onboarded"), [d for d in found if not d.is_error]
+        return value, {"origin": "skeleton" if value.is_skeleton else "onboarded"}, [d for d in found if not d.is_error]
     graph, notes = Graph.from_human(value)
-    return graph, ("skeleton" if graph.is_skeleton else "onboarded"), notes
+    return graph, {"origin": "skeleton" if graph.is_skeleton else "onboarded"}, notes
 
 
 async def evolve(
@@ -110,15 +116,15 @@ async def evolve(
     trace_store: TraceStore | None = None,
     checkpoint_store: CheckpointStore | None = None,
     hooks: Hooks | None = None,
-    initial_graph: Graph | dict[str, Any] | Path | None = None,
+    initial_graph: Graph | BootstrapResult | dict[str, Any] | Path | None = None,
     baseline: Evaluation | None = None,
     available_tools: Sequence[str] | None = None,
     redact: Redactor | None = None,
 ) -> RunReport:
     """Run up to ``config.max_rounds`` rounds of Algorithm 1 and persist the results.
 
-    ``initial_graph`` seeds an empty workspace (a hand-written graph, or nothing for the skeleton); supplying one for
-    a workspace that already has a graph is an error. ``baseline`` lets a host that already scored the head skip
+    ``initial_graph`` seeds an empty workspace (a hand-written graph, a ``BootstrapResult``, or nothing for the
+    skeleton); supplying one for a workspace that already has a graph is an error. ``baseline`` lets a host that already scored the head skip
     line 1. ``checkpoint_store`` enables resume: a round interrupted after its refiner stage is finished, not
     repeated. ``redact`` is applied to every collected trace before the refiner, the trace store or rejection memory
     see it. ``available_tools`` fills the prompt's tool list and produces ``unknown_action`` warnings.
@@ -147,10 +153,10 @@ async def evolve(
     # -- state: the graph (G_0 or the stored head) and rejection memory ------------------------------------------------
     graph_ref, graph = await graph_store.load()
     if graph_ref is None:
-        graph, origin, notes = coerce_initial_graph(initial_graph)
+        graph, seed_meta, notes = coerce_initial_graph(initial_graph)
         for note in notes:
             await warn(f"initial graph: {note}")
-        graph_ref = await graph_store.seed(graph, meta={"origin": origin})
+        graph_ref = await graph_store.seed(graph, meta=seed_meta)
     elif initial_graph is not None:
         raise ValueError(
             f"initial_graph was supplied but the workspace already has a graph (head {graph_ref[:12]}); "
@@ -455,17 +461,23 @@ async def refine_once(
     available_tools: Sequence[str] | None = None,
     mode: str | None = None,
     hooks: Hooks | None = None,
+    attempts_block: str | None = None,
 ) -> tuple[Graph | None, EditSet, list[Diagnostic]]:
     """The one-time modes (App. D.2 Modes 2 and 4, ``static_onetime`` / ``scratch_onetime``): one refiner pass over
-    all traces, no store, no gate, no rejection memory (G6). Returns (candidate or None, the edit set, diagnostics)."""
-    hooked = HookedModel(model, hooks or Hooks(), BudgetMeter(config.budget))
+    all traces, no store, no gate, no rejection memory (G6). Returns (candidate or None, the edit set, diagnostics).
+
+    ``attempts_block`` replaces the rendered traces in the prompt's trajectories slot (used by ``bootstrap_graph`` when
+    there are no traces at all). A ``HookedModel`` passed as ``model`` is reused, so the caller's meter counts the call.
+    """
+    hooked = model if isinstance(model, HookedModel) else HookedModel(model, hooks or Hooks(), BudgetMeter(config.budget))
     refiner = Refiner(hooked, config)
     chosen = mode or ("scratch_onetime" if graph.is_skeleton else "static_onetime")
     if chosen not in ("static_onetime", "scratch_onetime"):
         raise ValueError("refine_once runs the one-time modes only: static_onetime or scratch_onetime")
-    attempts_block = render_attempts_block(
-        list(traces), cap=config.refiner_context_cap, token_counter=config.token_counter, success_threshold=config.success_threshold
-    )
+    if attempts_block is None:
+        attempts_block = render_attempts_block(
+            list(traces), cap=config.refiner_context_cap, token_counter=config.token_counter, success_threshold=config.success_threshold
+        )
     result = await refiner.propose(
         graph, mode=chosen, attempts_block=attempts_block, rejected_block="(none: one-time mode)", available_tools=available_tools
     )

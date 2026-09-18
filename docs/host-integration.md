@@ -115,6 +115,12 @@ again for the same round, the recorded evaluation is reused, and neither `collec
 - From a hand-written graph: `evolve(initial_graph=Path("expert.json"))` or `proceduralgraph --store ... init --graph
   expert.json`. The file is the refiner's `{"nodes": [...], "edges": [...]}` shape; a missing `Start`/`End` is added
   with a warning, anything that fails the structural checks is refused. The refiner then runs in `static_incremental`.
+- From a problem statement: `result = await bootstrap_graph(problem_statement=..., solutions=[...], tools=[...], model=model)`
+  then `evolve(initial_graph=result)`, or `proceduralgraph --store ... init --from-text problem.md --solutions ./solved
+  --tools a,b --model anthropic:ID`. Each worked solution is presented to the refiner as a successful trajectory; the
+  tool list is mandatory when there are no solutions. Both paths seed with `origin: bootstrapped`. The graph is a
+  starting point, not a validated one: the first `evolve` scores it as the baseline. Pass the loop's `HookedModel` as
+  `model` to meter the bootstrap call under the same budget.
 - From a sibling workspace: `seed_workspace(revisions, source="tenant-a", target="tenant-b")` or the CLI `transfer`.
   Rejection memory does not travel.
 

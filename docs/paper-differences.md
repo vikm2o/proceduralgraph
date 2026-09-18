@@ -191,6 +191,23 @@ by `propose` is itself run through the structural checks before validation. Role
 `ModelRequest.role`. Why:
 leases, idempotency and per-role pricing are the host's, not the module's.
 
+### 2.19 Bootstrapping a graph from a problem statement
+Paper: a graph is either hand-crafted by an expert (Modes 1–3) or synthesised by the refiner from agent traces
+(Modes 4–5). Package: `bootstrap_graph(problem_statement, solutions=(), tools=..., model=...)` and CLI
+`init --from-text` run `refine_once` (G6) in the paper's `scratch_onetime` mode with the problem statement as the
+task context and each worked solution presented as one successful trajectory (score 1.0, id `solution-N`). Two
+placeholders are the only prompt text not in the paper: when there are no solutions the trajectories slot holds one
+sentence asking the refiner to design the procedure from the task context and the tool list
+(`bootstrap.NO_SOLUTIONS_BLOCK`), and the rejected-candidates slot holds `refine_once`'s usual "(none: one-time mode)"
+placeholder because there are no earlier rounds. Without solutions the tool list is mandatory: the prompt's rule 1
+needs it and there are no trajectories to infer it from. The result passes the same structural checks as a refiner
+candidate and is refused with diagnostics otherwise; it is seeded with `origin: bootstrapped` plus the solution count,
+mode and refiner-call count, on both the CLI path and `evolve(initial_graph=result)`. Like the paper's one-time modes
+it is committed without a gate: the first `evolve` run scores it as the baseline and gates everything after. Why: a
+team adopting the method usually has a task description and a few solved examples before it has an agent producing
+traces; without this the only options are an expert's hand-written file or rounds of scratch evolution from
+`Start → End`.
+
 ## 3. Deliberately unchanged
 
 - The refiner is one single-shot JSON call: no ReAct proposer, no tools, no maintainer, no pruner.

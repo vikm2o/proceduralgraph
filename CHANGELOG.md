@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 (unreleased)
+
+- `bootstrap_graph(problem_statement, solutions=(), tools=..., model=...)` and CLI `init --from-text FILE
+  [--solutions DIR] [--tools a,b] --model SPEC [--retries N] [--cycle-policy allow|repair]`: draft a first graph from
+  a task description and optional worked solutions with `refine_once` in the paper's `scratch_onetime` mode, seeded
+  with `origin: bootstrapped` on both the CLI path and `evolve(initial_graph=result)` (paper-differences §2.19).
+  `refine_once` gains `attempts_block=` and reuses a `HookedModel` it is given. CLI `open_model` accepts
+  `anthropic:ID`, `openai:ID` and `scripted:FILE` (a JSON list of replies, for offline demos and tests).
+
 ## 0.1.0 (2026-09-18)
 
 First release: an independent reimplementation of *Procedural Graphs: Self-Evolving Execution Structures for LLM

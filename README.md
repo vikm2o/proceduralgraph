@@ -31,8 +31,8 @@ and crash recovery.
 ## Install
 
 ```bash
-pip install "proceduralgraph @ git+https://github.com/vikm2o/proceduralgraph@v0.1.0"
-pip install "proceduralgraph[postgres] @ git+https://github.com/vikm2o/proceduralgraph@v0.1.0"   # production store
+pip install "proceduralgraph @ git+https://github.com/vikm2o/proceduralgraph@0.2.0"
+pip install "proceduralgraph[postgres] @ git+https://github.com/vikm2o/proceduralgraph@0.2.0"   # production store
 ```
 
 Extras: `postgres`, `s3`, `gcs`, `anthropic`, `openai`, `dev`. The core has no dependencies.
@@ -106,6 +106,40 @@ Thought:
 one structural failure, one rejection and one duplicate refusal, then exports `graph.json`, `graph.md`, `graph.mmd`
 and `rejections.md`; `examples/anthropic_toy.py` does the same with a real model.
 
+## Bootstrapping a graph from a problem statement
+
+You do not need an expert or a trace corpus to get a first graph. Give the refiner the problem statement, the tool
+list and, if you have them, a few worked solutions, and it drafts one with the paper's `scratch_onetime` call:
+
+```python
+from glob import glob
+from proceduralgraph import bootstrap_graph, evolve
+
+result = await bootstrap_graph(
+    problem_statement=open("problem.md").read(),
+    solutions=[open(p).read() for p in sorted(glob("solved/*.md"))],   # optional; each becomes one successful trajectory
+    tools=["search", "read", "answer"],                                # required when there are no solutions
+    model=model,
+)
+if result.ok:
+    report = await evolve(..., initial_graph=result)                 # seeds with origin "bootstrapped", then gates every change
+else:
+    print(result.refusal())                                          # the structural diagnostics, never a half-valid graph
+```
+
+Or from the shell, then evolve against the same store:
+
+```bash
+proceduralgraph --store file:./ws --workspace qa init --from-text problem.md --solutions ./solved \
+    --tools search,read,answer --model anthropic:claude-sonnet-5
+```
+
+A bootstrapped graph passes the same structural checks as any candidate and is refused with diagnostics otherwise. It
+is a starting point, not a validated graph: like the paper's one-time modes it is committed without a gate, so the
+first `evolve` run scores it as the baseline and every change after that is gated. Two placeholders are the only
+prompt text not in the paper: one sentence in the trajectories slot when there are no worked solutions, and the
+"(none)" placeholder in the rejected-candidates slot that `refine_once` always uses (paper-differences §2.19).
+
 ## Integrating with your own system
 
 Implement small `async` protocols:
@@ -131,6 +165,9 @@ its own format and `Hooks.stage()` is where it wraps paid stages in leases, chec
 Command line: `proceduralgraph --store file:DIR|postgres:URL --workspace WS init|show|export|history|diff|rejections|transfer|guide`.
 
 ## Fidelity notes
+
+- Bootstrapping from a problem statement is not in the paper; it is `refine_once` in the paper's `scratch_onetime` mode
+  with the problem statement as task context, plus two recorded placeholders (paper-differences §2.19).
 
 - Guidance: `h=2` hops, `w=3` steps of trajectory, generative guidance over the local subgraph; the full graph when
   the last action matches no node. `raw_*` modes return the serialized context without a model call.

@@ -39,6 +39,7 @@ from .model import (
 )
 from .redaction import EMAIL, Redactor, redact_trace, regex_redactor
 from .rejections import RejectionEntry, RejectionMemory
+from .roles.bootstrap import BootstrapResult, bootstrap_graph
 from .roles.refiner import Refiner
 from .serialize import render_markdown, render_mermaid, serialize_context
 from .stores import (
@@ -72,7 +73,7 @@ from .traces import (
     tail,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Vikash Ranjan (CTO, styls.ai)"
 
 __all__ = [
@@ -83,6 +84,7 @@ __all__ = [
     "END",
     "SCHEMA_VERSION",
     "START",
+    "BootstrapResult",
     "Budget",
     "BudgetExceeded",
     "Candidate",
@@ -146,6 +148,7 @@ __all__ = [
     "TraceStore",
     "__author__",
     "__version__",
+    "bootstrap_graph",
     "canonical_json",
     "digest",
     "evolve",
