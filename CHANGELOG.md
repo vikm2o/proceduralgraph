@@ -1,9 +1,13 @@
 # Changelog
 
-## 0.3.0 (unreleased)
+## 0.3.2 (2026-09-18)
 
 Quality and cost objectives (`feature-request/feature-proceduralgraph-objectives-1.md`). Additive and opt-in: with no
 objective configured every 0.2.0 behaviour, document shape and digest is unchanged.
+
+**Tags to avoid.** Git tags are never repointed. Tag `0.3.0` was pushed before the feature commit and points at the
+0.2.0 content; tag `0.3.1` points at the feature commit but its package metadata still reports version 0.3.0. Pin
+`0.3.2`, whose tag, package version and content agree. `0.3.0` and `0.3.1` are not releases.
 
 - `objectives.py`: `MetricSpec`, `ObjectiveSpec`, `ObjectiveContext` (validated, deterministic documents, content
   digests), `Interval`, `hoeffding_radius`, `paired_hoeffding_v1`.
@@ -22,15 +26,15 @@ objective configured every 0.2.0 behaviour, document shape and digest is unchang
   baseline in scalar mode too, so the accepted graph is never re-evaluated as its own control; the refiner is shown the frozen
   objective and every decision's per-metric comparison; per-trace `measured:` observations in the trajectories.
 - `examples/objective_evolution.py`: both modes, unknown cost, restart recovery, deferred host evaluation, offline.
-- Reader/writer compatibility (REQ-018): 0.3.0 reads every 0.2.0 document unchanged, keeping its shape and digest
-  (fixture-tested against a captured 0.2.0 run). The other direction is partial: 0.3.0 now persists the gate's
-  `decision` on every gated round, scalar gates included, so rejection memory written by 0.3.0 carries a key 0.2.0
+- Reader/writer compatibility (REQ-018): 0.3.2 reads every 0.2.0 document unchanged, keeping its shape and digest
+  (fixture-tested against a captured 0.2.0 run). The other direction is partial: 0.3.2 now persists the gate's
+  `decision` on every gated round, scalar gates included, so rejection memory written by 0.3.2 carries a key 0.2.0
   did not write; 0.2.0's `RejectionEntry.from_dict` and `Evaluation.from_document` ignore unknown keys, but 0.2.0's
   `Trace.from_document` and `Evaluation.from_document` build `TaskOutcome(**dict)`, so a trace or evaluation document
   whose outcomes carry `metrics` (objective mode only) raises `TypeError` under a 0.2.0 reader. Do not read objective
   mode workspaces with 0.2.0.
 
-### Upgrading to 0.3.0
+### Upgrading to 0.3.2
 
 Nothing is required for existing hosts: with no objective configured, gates, ties, documents, digests, guidance
 modes, transports and stores behave as in 0.2.0. To adopt objective mode:
@@ -41,7 +45,7 @@ modes, transports and stores behave as in 0.2.0. To adopt objective mode:
    `Evaluation` and return the `ref` the loop asked you to evaluate (`score` may stay `None`).
 3. Pass `EvolveConfig(objective=objective, objective_context=context)` and `gate=ObjectiveGate(objective, context)`.
 4. Start in a fresh workspace if the old one has a pending (uncompleted) checkpoint: it is bound to no objective and
-   0.3.0 refuses to finish it under one. Completed history needs no migration.
+   0.3.2 refuses to finish it under one. Completed history needs no migration.
 5. Read decisions from `IterationReport.decision`, `RejectionEntry.decision` and the accepted revision's
    `meta["decision"]`; the CLI `rejections` view and `export` render the same lines.
 

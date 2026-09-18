@@ -31,8 +31,8 @@ and crash recovery.
 ## Install
 
 ```bash
-pip install "proceduralgraph @ git+https://github.com/vikm2o/proceduralgraph@0.3.0"
-pip install "proceduralgraph[postgres] @ git+https://github.com/vikm2o/proceduralgraph@0.3.0"   # production store
+pip install "proceduralgraph @ git+https://github.com/vikm2o/proceduralgraph@0.3.2"
+pip install "proceduralgraph[postgres] @ git+https://github.com/vikm2o/proceduralgraph@0.3.2"   # production store
 ```
 
 Extras: `postgres`, `s3`, `gcs`, `anthropic`, `openai`, `dev`. The core has no dependencies.

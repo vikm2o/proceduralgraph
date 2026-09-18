@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "proceduralgraph"
-version = "0.3.0"
+version = "0.3.2"
 description = "Self-evolving Procedural Graphs for LLM agents: per-step graph-derived guidance plus a gated offline refiner loop. Independent reimplementation of arXiv:2609.09153, adapted for production deployments: storage-agnostic, budgeted, resumable."
 readme = "README.md"
 license = "Apache-2.0"
