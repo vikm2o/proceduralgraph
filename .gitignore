@@ -1,0 +1,8 @@
+.venv/
+dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+toy-workspace/
+HANDOFF.md

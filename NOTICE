@@ -1,0 +1,6 @@
+proceduralgraph
+Copyright 2026 Vikash Ranjan (CTO, styls.ai)
+https://www.linkedin.com/in/vikash-ranjan-stylsai/ · https://styls.ai
+
+Independent reimplementation of "Procedural Graphs: Self-Evolving Execution Structures for LLM Agents"
+(Lu, Chen, Wu, Arık; arXiv:2609.09153). Licensed under the Apache License, Version 2.0.
