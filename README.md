@@ -31,8 +31,8 @@ and crash recovery.
 ## Install
 
 ```bash
-pip install "proceduralgraph @ git+https://github.com/vikm2o/proceduralgraph@0.2.0"
-pip install "proceduralgraph[postgres] @ git+https://github.com/vikm2o/proceduralgraph@0.2.0"   # production store
+pip install "proceduralgraph @ git+https://github.com/vikm2o/proceduralgraph@0.3.0"
+pip install "proceduralgraph[postgres] @ git+https://github.com/vikm2o/proceduralgraph@0.3.0"   # production store
 ```
 
 Extras: `postgres`, `s3`, `gcs`, `anthropic`, `openai`, `dev`. The core has no dependencies.
@@ -140,6 +140,52 @@ first `evolve` run scores it as the baseline and every change after that is gate
 prompt text not in the paper: one sentence in the trajectories slot when there are no worked solutions, and the
 "(none)" placeholder in the rejected-candidates slot that `refine_once` always uses (paper-differences §2.19).
 
+## Objectives: quality first, then cost
+
+The paper gates on one scalar score. Production usually wants more than one: hold quality while lowering measured
+resource use, or trade them off under explicit rules. Declare the objective once, put structured observations on each
+task outcome, and use the opt-in `ObjectiveGate`:
+
+```python
+from proceduralgraph import EvolveConfig, MetricSpec, ObjectiveContext, ObjectiveGate, ObjectiveSpec, TaskOutcome, Evaluation
+
+objective = ObjectiveSpec(
+    metrics=(
+        MetricSpec("quality", "fraction solved", "maximize", 0.0, 1.0, min_improvement=0.02, equivalence_margin=0.05, floor=0.8),
+        MetricSpec("cost", "provider calls per task", "minimize", 0.0, 50.0, min_improvement=1.0, equivalence_margin=2.0, non_regression_margin=3.0),
+        MetricSpec("latency", "seconds", "minimize", 0.0, 600.0, role="report_only"),
+    ),
+    mode="lexicographic",          # or "pareto": every optimized metric protected, at least one must improve
+    alpha=0.05, min_units=30,
+)
+context = ObjectiveContext(objective_digest=objective.digest, evaluation_design="val-design-3", evaluator_version="scorer-2",
+                           cohort="validation-a", expected_task_ids=validation_ids, budget_profile="prod-quota",
+                           evidence_partition="2026-09", measurement_basis={"cost": "billed provider calls"})
+
+class MyEvaluator:                                        # one TaskOutcome per expected task id, metrics in original units
+    async def evaluate(self, ref, graph, *, iteration, purpose):
+        outcomes = [TaskOutcome(t.id, t.score, t.passed, metrics={"quality": t.score, "cost": t.calls, "latency": t.seconds})
+                    for t in run_validation(graph)]
+        return Evaluation(ref=ref, score=None, per_task=outcomes, objective_context=context)
+
+report = await evolve(config=EvolveConfig(objective=objective, objective_context=context), gate=ObjectiveGate(objective, context), ...)
+print(report.iterations[0].disposition, report.iterations[0].decision["reasons"])
+```
+
+What you get: paired Hoeffding intervals per metric with the error budget split across the whole objective;
+lexicographic (accept at the first demonstrated improvement, reject at the first demonstrated regression, pass a metric
+only through equivalence) or pareto (every optimized metric held within its non-regression margin, at least one
+improves; opposing changes are a `trade_off`); absolute floors and ceilings on candidate means; six dispositions
+(`accepted`, `rejected`, `equivalent`, `unresolved`, `unmeasured`, `invalid`) with stable reason codes, persisted with
+rejection memory, iteration reports and the accepted revision, and rendered to the refiner so it learns which metric
+lost. Incomplete pairing, a changed cohort or evaluator, an unknown required cost or a deferred evaluation can never
+promote a graph. Checkpoints are bound to the objective; a run with a different objective refuses to finish them.
+
+Read [paper-differences §2.20](docs/paper-differences.md) for the exact rules and their limits: the guarantee is for one
+fixed candidate on a predeclared paired comparison; reusing validation tasks across many proposals is a search, and
+acceptance selects a development graph, not a release. `examples/objective_evolution.py` runs both modes, unknown cost,
+restart recovery and deferred evaluation offline.
+
 ## Integrating with your own system
 
 Implement small `async` protocols:
@@ -172,7 +218,7 @@ Command line: `proceduralgraph --store file:DIR|postgres:URL --workspace WS init
 - Guidance: `h=2` hops, `w=3` steps of trajectory, generative guidance over the local subgraph; the full graph when
   the last action matches no node. `raw_*` modes return the serialized context without a model call.
 - Gate: accept iff the validation score matches or exceeds the retained graph's cached score; no early stop; all
-  `K=10` rounds. `max_rejected_streak`, `PairedGate` and the perfect-score stop are opt-in.
+  `K=10` rounds. `max_rejected_streak`, `PairedGate`, `ObjectiveGate` and the perfect-score stop are opt-in.
 - Structural failures never reach validation and are recorded with diagnostics; a candidate identical to the head or
   to an earlier rejection is refused without validation.
 - The refiner sees every trace in the batch, high-scoring first and low-scoring last, cut from the front at 120,000

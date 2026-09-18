@@ -36,7 +36,7 @@ def test_document_round_trip_and_digest_lookup():
     again = RejectionMemory.from_document(memory.to_document())
     assert again.digest == memory.digest and len(again.entries) == 5
     assert again.entries[1].candidate is not None and again.entries[2].candidate is None
-    assert again.rejected_digests() == {f"{2:064d}": 2, f"{3:064d}": 3}
+    assert again.rejected_digests() == {f"{2:064d}": 2, f"{3:064d}": 3}  # F3: rejected and structural failures with a digest
     assert again.counts()["duplicate_candidate"] == 1
     assert again.entries[1].edits.counts()["add_nodes"] == 1 and again.entries[0].validation.score == 0.6
 

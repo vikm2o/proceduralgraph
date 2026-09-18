@@ -61,7 +61,8 @@ Module map (`src/proceduralgraph/`):
 | Refiner role | `roles/refiner.py` | `Refiner`, the App. B.5 prompt |
 | Traces | `traces.py` | `Trace`, `Step`, `TaskOutcome`, `TraceSource`, `render_attempts_block`, `tail` |
 | Rejection memory | `rejections.py` | `RejectionMemory`, `RejectionEntry` |
-| Gates | `gates.py` | `Evaluator`, `Gate`, `TieAcceptingGate`, `StrictImprovementGate`, `PairedGate` |
+| Gates | `gates.py` | `Evaluator`, `Gate`, `TieAcceptingGate`, `StrictImprovementGate`, `PairedGate`, `ObjectiveGate` |
+| Objectives | `objectives.py` | `MetricSpec`, `ObjectiveSpec`, `ObjectiveContext`, `paired_hoeffding_v1` (opt-in multi-metric acceptance) |
 | The loop | `harness.py` | `evolve`, `evolve_sync`, `refine_once`, `RunReport` |
 | Metering | `hooks.py`, `config.py` | `Hooks`, `HookedModel`, `BudgetMeter`, `Budget`, `EvolveConfig` |
 | Storage | `stores/` | `RevisionStore`, `GraphStore`, `RejectionStore`, `TraceStore`, `CheckpointStore`, adapters |
@@ -248,7 +249,7 @@ Document shapes, in one line each:
 | `graph` | `Graph.to_document()`: `schema`, sorted `nodes`, sorted `edges`, `relations`, `attribute_fields`, `node_types`, `meta` | seed, and every acceptance |
 | `rejections` | `RejectionMemory.to_document()`: `schema`, `iteration`, `entries[]` (kind, edits, candidate, digests, trace ids and scores, validation, diagnostics) | once per round |
 | `traces` | `schema`, `iteration`, `traces[]` (`Trace.to_document()`) | once per round, if a `TraceStore` is given |
-| `checkpoints` | `iteration`, `payload` (`edits`, `candidate`, `candidate_digest`, `diagnostics`, `trace_ids`, `trace_scores`, `mode`, then `+ evaluation`, then `completed`) | after the refiner, after validation, after the round |
+| `checkpoints` | `iteration`, `payload` (`edits`, `candidate`, `candidate_digest`, `diagnostics`, `trace_ids`, `trace_scores`, `mode`, `objective` binding in objective mode; then `+ host_candidate_digest`, `host_ref`, `evaluation`, `baseline_evaluation`, `baseline_ref`; then `+ decision`; then `completed`) | after the refiner, after validation, after the gate, after the round |
 
 The exported files (`graph.json`, `graph.md`, `graph.mmd`, `rejections.md`) are renderings of these documents, never
 the storage.
@@ -324,7 +325,7 @@ was lost is reconciled first.
 | Outcome | Meaning | Evaluated? | Head moves? |
 | --- | --- | --- | --- |
 | `accepted` | gate accepted the candidate | yes | yes |
-| `rejected` | gate refused it | yes | no |
+| `rejected` | gate refused it; with `ObjectiveGate` the recorded `decision.disposition` says why: `rejected` (measured loss), `equivalent`, `unresolved`, `unmeasured` or `invalid`. Only a measured `rejected` feeds duplicate refusal | yes (or deferred) | no |
 | `structural_failure` | edits could not be parsed or applied, or the (host's) candidate failed `validate()` | no | no |
 | `no_action` | the refiner returned four empty arrays | no | no |
 | `duplicate_candidate` | digest equals the head or an earlier rejected candidate | no | no |

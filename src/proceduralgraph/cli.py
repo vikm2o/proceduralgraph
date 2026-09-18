@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import re
 import sys
 from collections.abc import Sequence
 from pathlib import Path
@@ -31,6 +32,8 @@ from .stores.base import RevisionStore
 from .stores.file import FileRevisionStore, export_workspace
 from .stores.revision import CHAIN_KINDS, GRAPH, RevisionGraphStore, RevisionRejectionStore
 from .stores.transfer import seed_workspace
+
+_HEX64 = re.compile(r"[0-9a-f]{64}")
 
 
 class CliError(Exception):
@@ -195,9 +198,11 @@ async def cmd_history(store: RevisionStore, args: argparse.Namespace) -> str:
     lines = []
     for kind in kinds:
         for revision in await store.list(args.workspace, kind, limit=args.limit):
-            meta = {k: v for k, v in revision.meta.items() if k != "edits"}
+            meta = {k: (v[:12] if isinstance(v, str) and _HEX64.fullmatch(v) else v) for k, v in revision.meta.items() if k not in ("edits", "decision")}
             if "edits" in revision.meta:
                 meta["edits"] = {k: len(v) for k, v in revision.meta["edits"].items()}
+            if isinstance(revision.meta.get("decision"), dict):
+                meta["decision"] = revision.meta["decision"].get("disposition")
             rendered = json.dumps(meta, sort_keys=True, default=str) if meta else ""
             lines.append(f"{kind:<12} #{revision.seq:<4} {revision.digest[:12]}  {revision.created_at}  {rendered}"[:300])
     return "\n".join(lines) if lines else "(no revisions)"

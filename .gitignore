@@ -6,3 +6,4 @@ __pycache__/
 .ruff_cache/
 toy-workspace/
 HANDOFF.md
+objective-workspace/

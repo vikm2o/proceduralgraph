@@ -110,7 +110,8 @@ async def test_resume_reuses_a_recorded_validation():
                           trace_source=StaticTraceSource(traces()), evaluator=evaluator, checkpoint_store=checkpoints)
     assert report.outcomes() == ["accepted"]
     assert any("already been accepted before the interruption" in w for w in report.iterations[0].warnings)
-    assert [c[0] for c in evaluator.calls] == ["baseline", "candidate", "baseline"]  # no second candidate evaluation
+    assert [c[0] for c in evaluator.calls] == ["baseline", "candidate"]  # no second candidate evaluation, and no baseline on the accepted graph
+    assert any("baseline taken from the pending checkpoint" in w for w in report.warnings)
     assert (await revisions.head("ws", GRAPH)).seq == 1  # the resumed acceptance did not append a second time
 
 
@@ -174,4 +175,4 @@ async def test_resume_after_accept_with_a_normalising_host_does_not_accept_twice
     assert any("already been accepted before the interruption" in w for w in report.iterations[0].warnings)
     assert [r.seq for r in await revisions.list("ws", GRAPH)] == [1, 0]  # no second acceptance
     assert host.proposals == [1, 1]  # re-proposed once on resume, as G7 requires
-    assert [c[0] for c in evaluator.calls] == ["baseline", "candidate", "baseline"]
+    assert [c[0] for c in evaluator.calls] == ["baseline", "candidate"]  # the accepted graph is never evaluated as its own control

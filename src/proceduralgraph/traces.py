@@ -46,15 +46,20 @@ Trajectory = Sequence[Step]
 
 @dataclass
 class TaskOutcome:
+    """One task's result. ``metrics`` (optional, REQ-005) holds structured observations for an objective: metric name
+    to a finite number, or ``None`` for an explicit unknown. It is omitted from documents when absent so legacy records
+    keep their canonical shape and digests (REQ-018)."""
+
     task_id: str
     score: float  # in [0, 1]; the paper's S_i
     passed: bool
     prediction: Any = None
     truth: Any = None
     meta: dict[str, Any] = field(default_factory=dict)
+    metrics: dict[str, float | None] | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        value: dict[str, Any] = {
             "task_id": self.task_id,
             "score": self.score,
             "passed": self.passed,
@@ -62,6 +67,25 @@ class TaskOutcome:
             "truth": self.truth,
             "meta": self.meta,
         }
+        if self.metrics is not None:
+            value["metrics"] = dict(self.metrics)
+        return value
+
+    @classmethod
+    def from_dict(cls, value: dict[str, Any]) -> TaskOutcome:
+        return cls(
+            task_id=value["task_id"],
+            score=value["score"],
+            passed=value["passed"],
+            prediction=value.get("prediction"),
+            truth=value.get("truth"),
+            meta=dict(value.get("meta") or {}),
+            metrics=None if value.get("metrics") is None else dict(value["metrics"]),
+        )
+
+    def metric(self, name: str) -> float | None:
+        """The observation for ``name``: ``None`` when unknown or not recorded."""
+        return None if self.metrics is None else self.metrics.get(name)
 
 
 @dataclass
@@ -97,7 +121,7 @@ class Trace:
     def from_document(cls, value: dict[str, Any]) -> Trace:
         return cls(
             id=value["id"],
-            outcome=TaskOutcome(**value["outcome"]),
+            outcome=TaskOutcome.from_dict(value["outcome"]),
             text=value.get("text", ""),
             steps=[Step.from_dict(s) for s in value.get("steps", [])],
             media=[ImagePart.from_dict(m) for m in value.get("media", [])],
@@ -124,6 +148,9 @@ class Trace:
             body = "\n".join(s.rendered() for s in self.steps)
         if self.outcome.prediction is not None or self.outcome.truth is not None:
             body += f"\nprediction: {_short(self.outcome.prediction)}\nground truth: {_short(self.outcome.truth)}"
+        if self.outcome.metrics:
+            measured = ", ".join(f"{k}={'unknown' if v is None else f'{v:g}'}" for k, v in self.outcome.metrics.items())
+            body += f"\nmeasured: {measured}"
         return f"{head}\n{body}"
 
 

@@ -1,6 +1,51 @@
 # Changelog
 
-## 0.2.0 (unreleased)
+## 0.3.0 (unreleased)
+
+Quality and cost objectives (`feature-request/feature-proceduralgraph-objectives-1.md`). Additive and opt-in: with no
+objective configured every 0.2.0 behaviour, document shape and digest is unchanged.
+
+- `objectives.py`: `MetricSpec`, `ObjectiveSpec`, `ObjectiveContext` (validated, deterministic documents, content
+  digests), `Interval`, `hoeffding_radius`, `paired_hoeffding_v1`.
+- `TaskOutcome.metrics` and `Evaluation.objective_context` (optional; omitted from documents when absent).
+- `ObjectiveGate(objective, context)`: lexicographic and pareto acceptance over paired Hoeffding intervals with
+  absolute mean floors/ceilings, complete-pairing and context checks, six dispositions and stable reason codes in
+  `Decision.feedback`; the identity probe never stops the run.
+- `EvolveConfig.objective` / `objective_context`; the loop enforces `Evaluation.ref` against the graph it asked to
+  evaluate, binds checkpoints to the objective and context digests, refuses a pending checkpoint bound to anything
+  else (and refuses to finish an objective-bound checkpoint in scalar mode), records the decision before the head
+  moves, and recovers an acceptance without evaluating the accepted graph as its own control.
+- `Decision.feedback`, `baseline_ref` and `candidate_ref` persist on `RejectionEntry`, `IterationReport` and the
+  accepted revision meta for every gated round, scalar gates included (their renderings are unchanged); duplicate
+  refusal counts measured rejections and structural failures that recorded a digest, never an equivalent / unresolved
+  / unmeasured / invalid comparison; on resume after an acceptance the recorded candidate evaluation becomes the
+  baseline in scalar mode too, so the accepted graph is never re-evaluated as its own control; the refiner is shown the frozen
+  objective and every decision's per-metric comparison; per-trace `measured:` observations in the trajectories.
+- `examples/objective_evolution.py`: both modes, unknown cost, restart recovery, deferred host evaluation, offline.
+- Reader/writer compatibility (REQ-018): 0.3.0 reads every 0.2.0 document unchanged, keeping its shape and digest
+  (fixture-tested against a captured 0.2.0 run). The other direction is partial: 0.3.0 now persists the gate's
+  `decision` on every gated round, scalar gates included, so rejection memory written by 0.3.0 carries a key 0.2.0
+  did not write; 0.2.0's `RejectionEntry.from_dict` and `Evaluation.from_document` ignore unknown keys, but 0.2.0's
+  `Trace.from_document` and `Evaluation.from_document` build `TaskOutcome(**dict)`, so a trace or evaluation document
+  whose outcomes carry `metrics` (objective mode only) raises `TypeError` under a 0.2.0 reader. Do not read objective
+  mode workspaces with 0.2.0.
+
+### Upgrading to 0.3.0
+
+Nothing is required for existing hosts: with no objective configured, gates, ties, documents, digests, guidance
+modes, transports and stores behave as in 0.2.0. To adopt objective mode:
+
+1. Put `metrics={name: value}` (original units; `None` for an explicit unknown) on every `TaskOutcome` your evaluator
+   returns, one outcome per expected task id, failed and no-change paid attempts included.
+2. Declare an `ObjectiveSpec` and an `ObjectiveContext` once per run; set `objective_context=context` on every
+   `Evaluation` and return the `ref` the loop asked you to evaluate (`score` may stay `None`).
+3. Pass `EvolveConfig(objective=objective, objective_context=context)` and `gate=ObjectiveGate(objective, context)`.
+4. Start in a fresh workspace if the old one has a pending (uncompleted) checkpoint: it is bound to no objective and
+   0.3.0 refuses to finish it under one. Completed history needs no migration.
+5. Read decisions from `IterationReport.decision`, `RejectionEntry.decision` and the accepted revision's
+   `meta["decision"]`; the CLI `rejections` view and `export` render the same lines.
+
+## 0.2.0 (2026-09-18)
 
 - `bootstrap_graph(problem_statement, solutions=(), tools=..., model=...)` and CLI `init --from-text FILE
   [--solutions DIR] [--tools a,b] --model SPEC [--retries N] [--cycle-policy allow|repair]`: draft a first graph from

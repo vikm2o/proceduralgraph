@@ -54,6 +54,30 @@ head, pass `baseline=Evaluation(...)` to `evolve` and skip the baseline stage.
 Gates: `TieAcceptingGate()` (the paper), `StrictImprovementGate()`, `PairedGate(min_win_probability=0.9,
 min_tasks=20)`. All take `perfect=` for an early stop; the default gate leaves it off.
 
+## 3a. Objective mode
+
+To evolve toward better outcomes *and* lower measured resource use, declare an `ObjectiveSpec` and an
+`ObjectiveContext` once per run and pass `gate=ObjectiveGate(objective, context)` with
+`EvolveConfig(objective=..., objective_context=...)`. Your evaluator then returns one `TaskOutcome` per expected task id
+with `metrics={name: value}` in the declared units (`None` for an explicit unknown) and `objective_context=context` on
+the `Evaluation`; `score` may stay `None`. Rules the loop enforces in this mode:
+
+- `Evaluation.ref` must be the ref the loop asked you to evaluate (the head ref for the baseline, the candidate's
+  `propose` ref otherwise). A host-supplied `baseline=` must carry the head ref too.
+- One task id is one independent analysis unit. Aggregate repeated runs inside a unit with a predeclared rule before
+  building the outcome; include failed and no-change paid attempts in the totals.
+- Measure what was actually consumed. Fewer steps or tokens alone are not a monetary saving; if you compare money, the
+  `measurement_basis` must say what basis, and it must be identical on both sides.
+- Checkpoints are bound to the objective and context digests. Changing any metric, margin, bound, mode, alpha, cohort,
+  evaluator, budget profile, partition or basis is a new run in a fresh workspace; the pending record is kept.
+- The refiner is shown the frozen objective and every decision's per-metric comparison inside the existing prompt
+  slots; observations cannot edit the objective.
+- Library acceptance selects a development graph. Promotion to production, qualification on fresh evidence and any
+  sequential or multi-candidate selection design remain yours.
+
+Feedback lives on `IterationReport.decision`, `RejectionEntry.decision` (with `baseline_ref` / `candidate_ref`) and the
+accepted revision's `meta["decision"]`; the CLI `rejections` view and `export` show the same lines.
+
 ## 4. The model transport
 
 `ChatModel.complete(ModelRequest) -> ModelResponse`. Requests carry one system string, one user message of text and

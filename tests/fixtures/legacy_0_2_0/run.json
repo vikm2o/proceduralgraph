@@ -1,0 +1,2826 @@
+{
+ "checkpoints": [
+  {
+   "iteration": 6,
+   "payload": {
+    "completed": true
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 6,
+   "payload": {
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "verify"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "verify",
+       "target": "End"
+      }
+     ],
+     "meta": {},
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "v",
+       "id": "verify",
+       "meta": {},
+       "ref": null,
+       "type": "REASONING"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "verify"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "verify",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "v",
+       "id": "verify",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "evaluation": {
+     "aggregate": {},
+     "per_task": [
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t0",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t1",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t2",
+       "truth": null
+      }
+     ],
+     "ref": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+     "score": 0.8
+    },
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "host_candidate_digest": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+    "mode": "static_incremental",
+    "rejections_ref": "66ffe06c9fcde3a7445a5d3c3809f358a77720b040cdf842b1ef06e22603d89a",
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    }
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 6,
+   "payload": {
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "verify"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "verify",
+       "target": "End"
+      }
+     ],
+     "meta": {},
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "v",
+       "id": "verify",
+       "meta": {},
+       "ref": null,
+       "type": "REASONING"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "verify"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "verify",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "v",
+       "id": "verify",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "mode": "static_incremental",
+    "rejections_ref": "66ffe06c9fcde3a7445a5d3c3809f358a77720b040cdf842b1ef06e22603d89a",
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    }
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 5,
+   "payload": {
+    "completed": true
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 5,
+   "payload": {
+    "candidate": null,
+    "candidate_digest": null,
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [],
+     "add_nodes": [],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "mode": "static_incremental",
+    "rejections_ref": "677453678530f0b2033e3021a4548e071ec23429ecbc6f8c1118e9ab409843bc",
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    }
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 4,
+   "payload": {
+    "completed": true
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 4,
+   "payload": {
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      }
+     ],
+     "meta": {},
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "g",
+       "id": "guess",
+       "meta": {},
+       "ref": null,
+       "type": "REASONING"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "g",
+       "id": "guess",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "mode": "static_incremental",
+    "rejections_ref": "5f7c3a126156547f80992aba3a02ea359185d03e361ca8008c569317e161a28c",
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    }
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 3,
+   "payload": {
+    "completed": true
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 3,
+   "payload": {
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      }
+     ],
+     "meta": {},
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "g",
+       "id": "guess",
+       "meta": {},
+       "ref": null,
+       "type": "REASONING"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "g",
+       "id": "guess",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "evaluation": {
+     "aggregate": {},
+     "per_task": [
+      {
+       "meta": {},
+       "passed": false,
+       "prediction": null,
+       "score": 0.3,
+       "task_id": "t0",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": false,
+       "prediction": null,
+       "score": 0.3,
+       "task_id": "t1",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": false,
+       "prediction": null,
+       "score": 0.3,
+       "task_id": "t2",
+       "truth": null
+      }
+     ],
+     "ref": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+     "score": 0.3
+    },
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "host_candidate_digest": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+    "mode": "static_incremental",
+    "rejections_ref": "70efd0dc4dbbb5c96ab68a6d88ce6281ec0552e03f3f95f8a7082ff5d90a3509",
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    }
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 3,
+   "payload": {
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      }
+     ],
+     "meta": {},
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "g",
+       "id": "guess",
+       "meta": {},
+       "ref": null,
+       "type": "REASONING"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "g",
+       "id": "guess",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "mode": "static_incremental",
+    "rejections_ref": "70efd0dc4dbbb5c96ab68a6d88ce6281ec0552e03f3f95f8a7082ff5d90a3509",
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    }
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 2,
+   "payload": {
+    "completed": true
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 2,
+   "payload": {
+    "candidate": null,
+    "candidate_digest": null,
+    "diagnostics": [
+     {
+      "code": "missing_endpoint",
+      "message": "edge answer -LEADS_TO-> ghost references the unknown node 'ghost'",
+      "severity": "error",
+      "subject": "answer -LEADS_TO-> ghost"
+     }
+    ],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "ghost"
+      }
+     ],
+     "add_nodes": [],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "mode": "static_incremental",
+    "rejections_ref": "83ccf4951c3d20ca7b20673b3071641cf807f19842b38956e612864895105751",
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    }
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 1,
+   "payload": {
+    "completed": true
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 1,
+   "payload": {
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      }
+     ],
+     "meta": {
+      "repairs": [
+       {
+        "condition": null,
+        "guidance": "do it",
+        "pitfalls": null,
+        "relation": "PROVIDES_INPUT_FOR",
+        "source": "read",
+        "target": "search"
+       }
+      ]
+     },
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "diagnostics": [
+     {
+      "code": "cycle_repaired",
+      "message": "removed the cycle-closing edge read -PROVIDES_INPUT_FOR-> search",
+      "severity": "warning",
+      "subject": "read→search"
+     }
+    ],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "PROVIDES_INPUT_FOR",
+       "source": "read",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "s",
+       "id": "search",
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "type": "ACTION"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "type": "ACTION"
+      }
+     ],
+     "delete_edges": [
+      {
+       "source": "Start",
+       "target": "End"
+      }
+     ],
+     "delete_nodes": []
+    },
+    "evaluation": {
+     "aggregate": {},
+     "per_task": [
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t0",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t1",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t2",
+       "truth": null
+      }
+     ],
+     "ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+     "score": 0.8
+    },
+    "graph_ref": "81018b4dc164b64d0b19884bb95fabe1ade98052d0c5fe72135d1f9059a22c60",
+    "host_candidate_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "mode": "scratch_incremental",
+    "rejections_ref": null,
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    }
+   },
+   "schema": 1
+  },
+  {
+   "iteration": 1,
+   "payload": {
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      }
+     ],
+     "meta": {
+      "repairs": [
+       {
+        "condition": null,
+        "guidance": "do it",
+        "pitfalls": null,
+        "relation": "PROVIDES_INPUT_FOR",
+        "source": "read",
+        "target": "search"
+       }
+      ]
+     },
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "diagnostics": [
+     {
+      "code": "cycle_repaired",
+      "message": "removed the cycle-closing edge read -PROVIDES_INPUT_FOR-> search",
+      "severity": "warning",
+      "subject": "read→search"
+     }
+    ],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "PROVIDES_INPUT_FOR",
+       "source": "read",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "s",
+       "id": "search",
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "type": "ACTION"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "type": "ACTION"
+      }
+     ],
+     "delete_edges": [
+      {
+       "source": "Start",
+       "target": "End"
+      }
+     ],
+     "delete_nodes": []
+    },
+    "graph_ref": "81018b4dc164b64d0b19884bb95fabe1ade98052d0c5fe72135d1f9059a22c60",
+    "mode": "scratch_incremental",
+    "rejections_ref": null,
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    }
+   },
+   "schema": 1
+  }
+ ],
+ "graph_head": {
+  "created_at": "2026-09-18T00:00:00+00:00",
+  "digest": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+  "document": {
+   "attribute_fields": [
+    "condition",
+    "guidance",
+    "pitfalls"
+   ],
+   "edges": [
+    {
+     "condition": null,
+     "guidance": "do it",
+     "pitfalls": null,
+     "relation": "LEADS_TO",
+     "source": "Start",
+     "target": "search"
+    },
+    {
+     "condition": null,
+     "guidance": "do it",
+     "pitfalls": null,
+     "relation": "LEADS_TO",
+     "source": "answer",
+     "target": "End"
+    },
+    {
+     "condition": null,
+     "guidance": "do it",
+     "pitfalls": null,
+     "relation": "LEADS_TO",
+     "source": "read",
+     "target": "answer"
+    },
+    {
+     "condition": null,
+     "guidance": "do it",
+     "pitfalls": null,
+     "relation": "LEADS_TO",
+     "source": "read",
+     "target": "verify"
+    },
+    {
+     "condition": null,
+     "guidance": "do it",
+     "pitfalls": null,
+     "relation": "LEADS_TO",
+     "source": "search",
+     "target": "read"
+    },
+    {
+     "condition": null,
+     "guidance": "do it",
+     "pitfalls": null,
+     "relation": "LEADS_TO",
+     "source": "verify",
+     "target": "End"
+    }
+   ],
+   "meta": {},
+   "node_types": [
+    "ACTION",
+    "REASONING",
+    "STATUS"
+   ],
+   "nodes": [
+    {
+     "description": "Task end",
+     "id": "End",
+     "meta": {},
+     "ref": null,
+     "type": "STATUS"
+    },
+    {
+     "description": "Task start",
+     "id": "Start",
+     "meta": {},
+     "ref": null,
+     "type": "STATUS"
+    },
+    {
+     "description": "a",
+     "id": "answer",
+     "meta": {},
+     "ref": null,
+     "type": "ACTION"
+    },
+    {
+     "description": "r",
+     "id": "read",
+     "meta": {},
+     "ref": null,
+     "type": "ACTION"
+    },
+    {
+     "description": "s",
+     "id": "search",
+     "meta": {},
+     "ref": null,
+     "type": "ACTION"
+    },
+    {
+     "description": "v",
+     "id": "verify",
+     "meta": {},
+     "ref": null,
+     "type": "REASONING"
+    }
+   ],
+   "relations": [
+    "LEADS_TO",
+    "TRIGGERS",
+    "PROVIDES_INPUT_FOR",
+    "CONVERGES_TO"
+   ],
+   "schema": 1
+  },
+  "kind": "graph",
+  "meta": {
+   "base_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+   "edits": {
+    "add_edges": [
+     {
+      "condition": null,
+      "guidance": "do it",
+      "pitfalls": null,
+      "relation": "LEADS_TO",
+      "source": "read",
+      "target": "verify"
+     },
+     {
+      "condition": null,
+      "guidance": "do it",
+      "pitfalls": null,
+      "relation": "LEADS_TO",
+      "source": "verify",
+      "target": "End"
+     }
+    ],
+    "add_nodes": [
+     {
+      "description": "v",
+      "id": "verify",
+      "type": "REASONING"
+     }
+    ],
+    "delete_edges": [],
+    "delete_nodes": []
+   },
+   "iteration": 6,
+   "origin": "accepted",
+   "rejections_ref": "66ffe06c9fcde3a7445a5d3c3809f358a77720b040cdf842b1ef06e22603d89a",
+   "validation_score": 0.8
+  },
+  "parent_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+  "seq": 2,
+  "workspace": "ws"
+ },
+ "rejections": {
+  "entries": [
+   {
+    "base_digest": "81018b4dc164b64d0b19884bb95fabe1ade98052d0c5fe72135d1f9059a22c60",
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      }
+     ],
+     "meta": {
+      "repairs": [
+       {
+        "condition": null,
+        "guidance": "do it",
+        "pitfalls": null,
+        "relation": "PROVIDES_INPUT_FOR",
+        "source": "read",
+        "target": "search"
+       }
+      ]
+     },
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "created_at": "2026-09-18T00:00:00+00:00",
+    "diagnostics": [
+     {
+      "code": "cycle_repaired",
+      "message": "removed the cycle-closing edge read -PROVIDES_INPUT_FOR-> search",
+      "severity": "warning",
+      "subject": "read→search"
+     }
+    ],
+    "duplicate_of": null,
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "PROVIDES_INPUT_FOR",
+       "source": "read",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "s",
+       "id": "search",
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "type": "ACTION"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "type": "ACTION"
+      }
+     ],
+     "delete_edges": [
+      {
+       "source": "Start",
+       "target": "End"
+      }
+     ],
+     "delete_nodes": []
+    },
+    "iteration": 1,
+    "kind": "accepted",
+    "mode": "scratch_incremental",
+    "retained_score": 0.5,
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    },
+    "validation": {
+     "aggregate": {},
+     "per_task": [
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t0",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t1",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t2",
+       "truth": null
+      }
+     ],
+     "ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+     "score": 0.8
+    }
+   },
+   {
+    "base_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "candidate": null,
+    "candidate_digest": null,
+    "created_at": "2026-09-18T00:00:00+00:00",
+    "diagnostics": [
+     {
+      "code": "missing_endpoint",
+      "message": "edge answer -LEADS_TO-> ghost references the unknown node 'ghost'",
+      "severity": "error",
+      "subject": "answer -LEADS_TO-> ghost"
+     }
+    ],
+    "duplicate_of": null,
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "ghost"
+      }
+     ],
+     "add_nodes": [],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "iteration": 2,
+    "kind": "structural_failure",
+    "mode": "static_incremental",
+    "retained_score": null,
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    },
+    "validation": null
+   },
+   {
+    "base_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      }
+     ],
+     "meta": {},
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "g",
+       "id": "guess",
+       "meta": {},
+       "ref": null,
+       "type": "REASONING"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+    "created_at": "2026-09-18T00:00:00+00:00",
+    "diagnostics": [],
+    "duplicate_of": null,
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "g",
+       "id": "guess",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "iteration": 3,
+    "kind": "rejected",
+    "mode": "static_incremental",
+    "retained_score": 0.8,
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    },
+    "validation": {
+     "aggregate": {},
+     "per_task": [
+      {
+       "meta": {},
+       "passed": false,
+       "prediction": null,
+       "score": 0.3,
+       "task_id": "t0",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": false,
+       "prediction": null,
+       "score": 0.3,
+       "task_id": "t1",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": false,
+       "prediction": null,
+       "score": 0.3,
+       "task_id": "t2",
+       "truth": null
+      }
+     ],
+     "ref": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+     "score": 0.3
+    }
+   },
+   {
+    "base_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      }
+     ],
+     "meta": {},
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "g",
+       "id": "guess",
+       "meta": {},
+       "ref": null,
+       "type": "REASONING"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+    "created_at": "2026-09-18T00:00:00+00:00",
+    "diagnostics": [],
+    "duplicate_of": 3,
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "g",
+       "id": "guess",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "iteration": 4,
+    "kind": "duplicate_candidate",
+    "mode": "static_incremental",
+    "retained_score": null,
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    },
+    "validation": null
+   },
+   {
+    "base_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "candidate": null,
+    "candidate_digest": null,
+    "created_at": "2026-09-18T00:00:00+00:00",
+    "diagnostics": [],
+    "duplicate_of": null,
+    "edits": {
+     "add_edges": [],
+     "add_nodes": [],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "iteration": 5,
+    "kind": "no_action",
+    "mode": "static_incremental",
+    "retained_score": null,
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    },
+    "validation": null
+   },
+   {
+    "base_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "candidate": {
+     "attribute_fields": [
+      "condition",
+      "guidance",
+      "pitfalls"
+     ],
+     "edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "verify"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "verify",
+       "target": "End"
+      }
+     ],
+     "meta": {},
+     "node_types": [
+      "ACTION",
+      "REASONING",
+      "STATUS"
+     ],
+     "nodes": [
+      {
+       "description": "Task end",
+       "id": "End",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "Task start",
+       "id": "Start",
+       "meta": {},
+       "ref": null,
+       "type": "STATUS"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "s",
+       "id": "search",
+       "meta": {},
+       "ref": null,
+       "type": "ACTION"
+      },
+      {
+       "description": "v",
+       "id": "verify",
+       "meta": {},
+       "ref": null,
+       "type": "REASONING"
+      }
+     ],
+     "relations": [
+      "LEADS_TO",
+      "TRIGGERS",
+      "PROVIDES_INPUT_FOR",
+      "CONVERGES_TO"
+     ],
+     "schema": 1
+    },
+    "candidate_digest": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+    "created_at": "2026-09-18T00:00:00+00:00",
+    "diagnostics": [],
+    "duplicate_of": null,
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "verify"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "verify",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "v",
+       "id": "verify",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "iteration": 6,
+    "kind": "accepted",
+    "mode": "static_incremental",
+    "retained_score": 0.8,
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "trace_scores": {
+     "fail-1": 0.0,
+     "pass-1": 1.0
+    },
+    "validation": {
+     "aggregate": {},
+     "per_task": [
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t0",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t1",
+       "truth": null
+      },
+      {
+       "meta": {},
+       "passed": true,
+       "prediction": null,
+       "score": 0.8,
+       "task_id": "t2",
+       "truth": null
+      }
+     ],
+     "ref": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+     "score": 0.8
+    }
+   }
+  ],
+  "iteration": 6,
+  "schema": 1
+ },
+ "report": {
+  "best": {
+   "aggregate": {},
+   "ref": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+   "score": 0.8,
+   "tasks": 3
+  },
+  "budget": {
+   "ceilings": {
+    "max_evaluations": null,
+    "max_model_calls": null,
+    "max_output_tokens": null,
+    "max_seconds": null
+   },
+   "evaluations": 4,
+   "model_calls": 6,
+   "output_tokens": 566,
+   "seconds": 0.0
+  },
+  "graph": {
+   "digest": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+   "edges": 6,
+   "nodes": 6
+  },
+  "graph_ref": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+  "iterations": [
+   {
+    "candidate_digest": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "diagnostics": [
+     {
+      "code": "cycle_repaired",
+      "message": "removed the cycle-closing edge read -PROVIDES_INPUT_FOR-> search",
+      "severity": "warning",
+      "subject": "read→search"
+     }
+    ],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "Start",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "read"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "PROVIDES_INPUT_FOR",
+       "source": "read",
+       "target": "search"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "answer"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "s",
+       "id": "search",
+       "type": "ACTION"
+      },
+      {
+       "description": "r",
+       "id": "read",
+       "type": "ACTION"
+      },
+      {
+       "description": "a",
+       "id": "answer",
+       "type": "ACTION"
+      }
+     ],
+     "delete_edges": [
+      {
+       "source": "Start",
+       "target": "End"
+      }
+     ],
+     "delete_nodes": []
+    },
+    "evaluation": {
+     "aggregate": {},
+     "ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+     "score": 0.8,
+     "tasks": 3
+    },
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "iteration": 1,
+    "outcome": "accepted",
+    "rejections_ref": "83ccf4951c3d20ca7b20673b3071641cf807f19842b38956e612864895105751",
+    "resumed": false,
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "warnings": []
+   },
+   {
+    "candidate_digest": null,
+    "diagnostics": [
+     {
+      "code": "missing_endpoint",
+      "message": "edge answer -LEADS_TO-> ghost references the unknown node 'ghost'",
+      "severity": "error",
+      "subject": "answer -LEADS_TO-> ghost"
+     }
+    ],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "answer",
+       "target": "ghost"
+      }
+     ],
+     "add_nodes": [],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "evaluation": null,
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "iteration": 2,
+    "outcome": "structural_failure",
+    "rejections_ref": "70efd0dc4dbbb5c96ab68a6d88ce6281ec0552e03f3f95f8a7082ff5d90a3509",
+    "resumed": false,
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "warnings": []
+   },
+   {
+    "candidate_digest": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "g",
+       "id": "guess",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "evaluation": {
+     "aggregate": {},
+     "ref": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+     "score": 0.3,
+     "tasks": 3
+    },
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "iteration": 3,
+    "outcome": "rejected",
+    "rejections_ref": "5f7c3a126156547f80992aba3a02ea359185d03e361ca8008c569317e161a28c",
+    "resumed": false,
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "warnings": []
+   },
+   {
+    "candidate_digest": "db5f502b91e57e005db5ab56dba75128104aaa9939c7124768ce35fe8bad538b",
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "search",
+       "target": "guess"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "guess",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "g",
+       "id": "guess",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "evaluation": null,
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "iteration": 4,
+    "outcome": "duplicate_candidate",
+    "rejections_ref": "677453678530f0b2033e3021a4548e071ec23429ecbc6f8c1118e9ab409843bc",
+    "resumed": false,
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "warnings": [
+     "candidate db5f502b91e5 refused without validation: identical to the candidate rejected in iteration 3"
+    ]
+   },
+   {
+    "candidate_digest": null,
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [],
+     "add_nodes": [],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "evaluation": null,
+    "graph_ref": "735229475de01a7f64f5373c40a27d7051d7002752e427c5164b8a53bc3a375e",
+    "iteration": 5,
+    "outcome": "no_action",
+    "rejections_ref": "66ffe06c9fcde3a7445a5d3c3809f358a77720b040cdf842b1ef06e22603d89a",
+    "resumed": false,
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "warnings": []
+   },
+   {
+    "candidate_digest": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+    "diagnostics": [],
+    "edits": {
+     "add_edges": [
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "read",
+       "target": "verify"
+      },
+      {
+       "condition": null,
+       "guidance": "do it",
+       "pitfalls": null,
+       "relation": "LEADS_TO",
+       "source": "verify",
+       "target": "End"
+      }
+     ],
+     "add_nodes": [
+      {
+       "description": "v",
+       "id": "verify",
+       "type": "REASONING"
+      }
+     ],
+     "delete_edges": [],
+     "delete_nodes": []
+    },
+    "evaluation": {
+     "aggregate": {},
+     "ref": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+     "score": 0.8,
+     "tasks": 3
+    },
+    "graph_ref": "45cca83aecbf709f0f3c67126b26405215d321e23cccb247ec53ce70637a0886",
+    "iteration": 6,
+    "outcome": "accepted",
+    "rejections_ref": "a170950730968d698daa65addcec457a1746ca04ef77a6cd8477e6c29633febb",
+    "resumed": false,
+    "stale_trace_ids": [],
+    "trace_ids": [
+     "pass-1",
+     "fail-1"
+    ],
+    "warnings": []
+   }
+  ],
+  "model_calls": 6,
+  "outcomes": [
+   "accepted",
+   "structural_failure",
+   "rejected",
+   "duplicate_candidate",
+   "no_action",
+   "accepted"
+  ],
+  "rejections_ref": "a170950730968d698daa65addcec457a1746ca04ef77a6cd8477e6c29633febb",
+  "resumed_iteration": null,
+  "stopped_reason": "max_rounds",
+  "warnings": [
+   "candidate db5f502b91e5 refused without validation: identical to the candidate rejected in iteration 3"
+  ]
+ },
+ "traces": {
+  "iteration": 6,
+  "schema": 1,
+  "traces": [
+   {
+    "graph_ref": null,
+    "guidance": [],
+    "id": "pass-1",
+    "media": [],
+    "meta": {},
+    "nodes_visited": [
+     "search",
+     "read",
+     "answer"
+    ],
+    "outcome": {
+     "meta": {},
+     "passed": true,
+     "prediction": null,
+     "score": 1.0,
+     "task_id": "q1",
+     "truth": null
+    },
+    "steps": [],
+    "text": "searched, read, answered"
+   },
+   {
+    "graph_ref": null,
+    "guidance": [],
+    "id": "fail-1",
+    "media": [],
+    "meta": {},
+    "nodes_visited": [
+     "search",
+     "answer"
+    ],
+    "outcome": {
+     "meta": {},
+     "passed": false,
+     "prediction": null,
+     "score": 0.0,
+     "task_id": "q2",
+     "truth": null
+    },
+    "steps": [],
+    "text": "searched then guessed"
+   }
+  ]
+ }
+}

@@ -7,6 +7,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
+from .objectives import ObjectiveContext, ObjectiveSpec
+
 MODES = ("auto", "static_incremental", "scratch_incremental")
 ONETIME_MODES = ("static_onetime", "scratch_onetime")
 CYCLE_POLICIES = ("allow", "repair")
@@ -60,8 +62,17 @@ class EvolveConfig:
     seed: int = 17
     workspace: str = "default"
     budget: Budget = field(default_factory=Budget)
+    # Objective mode (REQ-007, opt-in): the frozen objective and the evidence context every evaluation must carry. Both or
+    # neither. With an objective set, the loop enforces Evaluation.ref against the graph it asked to evaluate, binds
+    # checkpoints to the objective and context digests, and renders both to the refiner.
+    objective: ObjectiveSpec | None = None
+    objective_context: ObjectiveContext | None = None
 
     def __post_init__(self) -> None:
+        if (self.objective is None) != (self.objective_context is None):
+            raise ValueError("objective and objective_context must be set together")
+        if self.objective is not None and not self.objective_context.bound_to(self.objective):
+            raise ValueError("objective_context.objective_digest does not match objective.digest")
         if self.mode not in MODES:
             raise ValueError(f"mode must be one of {MODES}; the one-time modes are only reachable through refine_once()")
         if self.cycle_policy not in CYCLE_POLICIES:

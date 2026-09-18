@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 import asyncio
+import copy
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -27,7 +28,7 @@ from typing import Any
 from .config import Budget, EvolveConfig
 from .documents import HeadMoved
 from .edits import EditSet, unified_diff
-from .gates import Evaluation, Evaluator, Gate, TieAcceptingGate
+from .gates import Decision, Evaluation, Evaluator, Gate, TieAcceptingGate
 from .graph import Diagnostic, Graph, GraphError, errors
 from .hooks import BudgetExceeded, BudgetMeter, HookedModel, Hooks, IterationReport
 from .model import ChatModel, ImagePart
@@ -131,6 +132,27 @@ async def evolve(
     """
     hooks = hooks or Hooks()
     gate = gate or TieAcceptingGate()
+    objective = config.objective
+    # Objective mode (REQ-007, REQ-017): every checkpoint and decision this run writes is bound to these digests, and a
+    # pending checkpoint bound to anything else (or to nothing) is refused rather than reused.
+    binding: dict[str, Any] | None = None
+    startup_warnings: list[str] = []
+    if objective is not None:
+        binding = {
+            "objective_digest": objective.digest,
+            "context_digest": config.objective_context.digest,
+            "objective": objective.to_document(),
+            "context": config.objective_context.to_document(),
+        }
+        gate_objective, gate_context = getattr(gate, "objective", None), getattr(gate, "context", None)
+        if gate_objective is not None or gate_context is not None:
+            if gate_objective is None or gate_context is None or gate_objective.digest != objective.digest or gate_context.digest != binding["context_digest"]:
+                raise ValueError("the ObjectiveGate's objective/context digests differ from EvolveConfig.objective / objective_context")
+        else:
+            startup_warnings.append(
+                f"an objective is configured but the gate ({type(gate).__name__}) is not an ObjectiveGate; the refiner is told decisions are "
+                "measured against the objective, so make sure this gate applies it"
+            )
     trace_store = trace_store or NullTraceStore()
     checkpoints = checkpoint_store or NullCheckpointStore()
     if isinstance(model, HookedModel):
@@ -149,6 +171,9 @@ async def evolve(
     async def warn(message: str) -> None:
         run_warnings.append(message)
         await hooks.on_warning(message)
+
+    for message in startup_warnings:
+        await warn(message)
 
     # -- state: the graph (G_0 or the stored head) and rejection memory ------------------------------------------------
     graph_ref, graph = await graph_store.load()
@@ -170,8 +195,36 @@ async def evolve(
     resume: dict[str, Any] | None = None
     recorded = await checkpoints.load(start)
     if recorded and not recorded.get("completed") and "edits" in recorded:
+        recorded_binding = recorded.get("objective")
+        same_binding = (recorded_binding is None and binding is None) or (
+            isinstance(recorded_binding, dict) and binding is not None
+            and recorded_binding.get("objective_digest") == binding["objective_digest"]
+            and recorded_binding.get("context_digest") == binding["context_digest"]
+        )
+        if not same_binding:
+            # REQ-017: an attempt made under another objective/context, or under none, cannot be reused; the record stays.
+            raise ValueError(
+                f"workspace {config.workspace!r} has a pending checkpoint for iteration {start} bound to "
+                f"{'no objective' if recorded.get('objective') is None else 'objective ' + recorded['objective']['objective_digest'][:12]} "
+                f"while this run is configured with {'no objective' if binding is None else 'objective ' + binding['objective_digest'][:12]}; "
+                "start a new run in a fresh workspace (the pending record is kept, never relabelled or deleted)"
+            )
         resume = recorded
 
+    baseline_from_checkpoint = False
+    if (
+        baseline is None
+        and resume is not None
+        and resume.get("evaluation")
+        and resume.get("host_candidate_digest") == graph.digest
+        and resume.get("graph_ref") != graph_ref
+    ):
+        # The interrupted round's candidate IS the head (its acceptance landed before the crash). Its recorded evaluation
+        # is the head's score; re-evaluating it here would use the accepted graph as its own control (REQ-017). Its ref is
+        # the host's propose() ref for that candidate, which need not equal the ref load() reports for the head.
+        baseline = Evaluation.from_document(resume["evaluation"])
+        baseline_from_checkpoint = True
+        await warn("baseline taken from the pending checkpoint: the head is the candidate accepted before the interruption")
     if baseline is None:
         try:
             meter.check(about_to="evaluation")
@@ -182,6 +235,8 @@ async def evolve(
             return RunReport(iterations=[], graph_ref=graph_ref, graph=graph, rejections_ref=rejections_ref, rejections=memory, best=None,
                              stopped_reason="budget_exhausted", budget=meter.to_dict(), warnings=run_warnings, model_calls=hooked.calls)
         meter.evaluations += 1
+    if objective is not None and not baseline_from_checkpoint:
+        _check_ref(baseline, graph_ref, "baseline")
     best = baseline
     if resume is None and (await gate.decide(best, best)).stop:
         # A pending checkpoint takes precedence: the interrupted round is reconciled first (its acceptance may be what
@@ -210,6 +265,8 @@ async def evolve(
         diagnostics: list[Diagnostic] = []
         evaluation: Evaluation | None = None
         decision_stop = False
+        decision: Decision | None = None
+        hosted_ref: str | None = None
         duplicate_of: int | None = None
         previous_best_score = best.score
         trace_ids: list[str] = []
@@ -241,7 +298,10 @@ async def evolve(
                     sample, cap=config.refiner_context_cap, token_counter=config.token_counter, success_threshold=config.success_threshold,
                     head_ref=graph_ref,
                 )
-                rejected_block = memory.render_for_refiner(full_entries=config.rejections_full_entries, char_cap=config.rejections_char_cap)
+                rejected_block = memory.render_for_refiner(
+                    full_entries=config.rejections_full_entries, char_cap=config.rejections_char_cap,
+                    objective_summary=None if objective is None else "Objective for this run (every decision below is measured against it):\n" + objective.summary(),
+                )
                 images = _refiner_images(sample, config.refiner_images)
                 async with hooks.stage(f"refiner:{k}"):
                     result = await refiner.propose(
@@ -265,6 +325,8 @@ async def evolve(
                     "stale_trace_ids": stale_ids,
                     "mode": mode,
                 }
+                if binding is not None:
+                    record["objective"] = binding
                 await checkpoints.save(k, record)
                 checkpointed = True
             else:
@@ -298,6 +360,7 @@ async def evolve(
                     )
                     candidate = hosted.graph
                     candidate_digest = candidate.digest
+                hosted_ref = hosted.ref
                 host_errors = errors(hosted.graph.validate())  # the host's graph is what gets validated and served: check it too
                 known = _known_candidate(candidate.digest, graph, memory)
                 if host_errors:
@@ -313,6 +376,12 @@ async def evolve(
                     # The acceptance landed before the interruption (the head IS this candidate) but the rejection-memory
                     # save did not. Record the outcome from the checkpoint without re-accepting.
                     evaluation = Evaluation.from_document(checkpoint["evaluation"])
+                    if objective is not None:
+                        _check_cached_ref(checkpoint, evaluation, hosted.ref)
+                    if checkpoint.get("decision"):
+                        decision = _recorded_decision(checkpoint["decision"])
+                    if checkpoint.get("baseline_evaluation"):
+                        previous_best_score = Evaluation.from_document(checkpoint["baseline_evaluation"]).score
                     best, outcome = evaluation, "accepted"
                     warnings.append("the resumed candidate had already been accepted before the interruption; recorded from its checkpoint")
                 elif known is not None:
@@ -322,18 +391,39 @@ async def evolve(
                     # -- validation (line 15) --
                     if checkpoint is not None and checkpoint.get("evaluation"):
                         evaluation = Evaluation.from_document(checkpoint["evaluation"])
+                        if objective is not None:
+                            _check_cached_ref(checkpoint, evaluation, hosted.ref)
                         warnings.append("reused the recorded validation of the resumed candidate")
+                        if checkpoint.get("baseline_evaluation"):
+                            best = Evaluation.from_document(checkpoint["baseline_evaluation"])  # the control the decision was (or will be) made against
+                            previous_best_score = best.score
                     else:
                         meter.check(about_to="evaluation")
                         async with hooks.stage(f"validation:{k}"):
                             evaluation = await evaluator.evaluate(hosted.ref, candidate, iteration=k, purpose="candidate")
                         meter.evaluations += 1
-                        await checkpoints.save(k, {**record, "host_candidate_digest": candidate.digest, "evaluation": evaluation.to_document()})
+                        if objective is not None:
+                            _check_ref(evaluation, hosted.ref, "candidate")
+                        record = {**record, "host_candidate_digest": candidate.digest, "host_ref": hosted.ref,
+                                  "evaluation": evaluation.to_document(), "baseline_evaluation": best.to_document(), "baseline_ref": graph_ref}
+                        await checkpoints.save(k, record)
                     # -- the gate (lines 16-20) --
-                    decision = await gate.decide(best, evaluation)
+                    if checkpoint is not None and checkpoint.get("decision"):
+                        decision = _recorded_decision(checkpoint["decision"])
+                        warnings.append("reused the recorded gate decision of the resumed candidate")
+                    else:
+                        decision = await gate.decide(best, evaluation)
+                        # REQ-017: the decision is durable before the head moves, so a crash after accept() recovers the
+                        # same decision without re-deciding against the accepted graph as its own control.
+                        await checkpoints.save(k, {**record, "host_candidate_digest": candidate.digest,
+                                                   "decision": {"accepted": decision.accepted, "stop": decision.stop, "feedback": decision.feedback}})
                     if decision.accepted:
                         hosted.meta["validation_score"] = evaluation.score
                         hosted.meta["iteration"] = k
+                        hosted.meta["baseline_ref"] = graph_ref
+                        hosted.meta["candidate_ref"] = hosted.ref
+                        if decision.feedback:
+                            hosted.meta["decision"] = copy.deepcopy(decision.feedback)
                         graph_ref = await graph_store.accept(hosted, expected_ref=graph_ref)
                         graph, best, outcome = candidate, evaluation, "accepted"
                     else:
@@ -362,6 +452,9 @@ async def evolve(
             diagnostics=list(diagnostics),
             duplicate_of=duplicate_of,
             mode=mode,
+            decision=copy.deepcopy(decision.feedback) if decision is not None and decision.feedback else None,
+            baseline_ref=record.get("baseline_ref") if decision is not None else None,
+            candidate_ref=hosted_ref if decision is not None else None,
         )
         memory.record(entry)
         rejections_ref = await rejection_store.save(memory, expected_ref=rejections_ref, iteration=k)
@@ -385,6 +478,7 @@ async def evolve(
             graph_ref=graph_ref,
             rejections_ref=rejections_ref,
             resumed=checkpoint is not None,
+            decision=copy.deepcopy(decision.feedback) if decision is not None and decision.feedback else None,
         )
         reports.append(report)
         for message in warnings:
@@ -437,8 +531,28 @@ def _refiner_images(traces: list[Trace], limit: int) -> list[ImagePart]:
     return images
 
 
+def _check_ref(evaluation: Evaluation, expected_ref: str | None, what: str) -> None:
+    """REQ-004: an evaluation must identify the graph the loop asked it to evaluate (objective mode only)."""
+    if evaluation.ref != expected_ref:
+        raise ValueError(f"the {what} Evaluation.ref {evaluation.ref!r} does not identify the graph evaluated ({expected_ref!r}) (REQ-004)")
+
+
+def _check_cached_ref(checkpoint: dict[str, Any], evaluation: Evaluation, hosted_ref: str) -> None:
+    """REQ-004 for the cached path: the recorded evaluation must be of the candidate the host just re-proposed."""
+    if checkpoint.get("host_ref") != hosted_ref or evaluation.ref != hosted_ref:
+        raise ValueError(
+            f"the cached Evaluation.ref {evaluation.ref!r} (recorded for {checkpoint.get('host_ref')!r}) does not identify the re-proposed "
+            f"candidate {hosted_ref!r}; the host's propose() is not idempotent for this round (REQ-004)"
+        )
+
+
+def _recorded_decision(value: dict[str, Any]) -> Decision:
+    return Decision(accepted=bool(value.get("accepted")), feedback=copy.deepcopy(dict(value.get("feedback", {}))), stop=bool(value.get("stop")))
+
+
 def _known_candidate(candidate_digest: str, current: Graph, memory: RejectionMemory) -> tuple[str, int | None] | None:
-    """F3: a candidate the loop already has an answer for: identical to the head, or rejected / structurally failed earlier."""
+    """F3: a candidate the loop already has an answer for: identical to the head, measured as worse earlier, or
+    structurally failed earlier with a recorded digest. Equivalent / unresolved / unmeasured comparisons do not count."""
     if candidate_digest == current.digest:
         return ("identical to the current head graph", None)
     earlier = memory.rejected_digests().get(candidate_digest)

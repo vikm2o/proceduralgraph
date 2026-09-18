@@ -42,13 +42,20 @@ class IterationReport:
     graph_ref: str | None = None
     rejections_ref: str | None = None
     resumed: bool = False
+    decision: dict[str, Any] | None = None  # the gate's Decision.feedback (REQ-016); omitted from to_dict when absent
 
     @property
     def accepted(self) -> bool:
         return self.outcome == "accepted"
 
+    @property
+    def disposition(self) -> str | None:
+        """The gate's disposition when a structured decision was recorded (``accepted`` / ``rejected`` / ``equivalent`` /
+        ``unresolved`` / ``unmeasured`` / ``invalid``); ``None`` for scalar gates."""
+        return None if self.decision is None else self.decision.get("disposition")
+
     def to_dict(self) -> dict[str, Any]:
-        return {
+        value: dict[str, Any] = {
             "iteration": self.iteration,
             "trace_ids": list(self.trace_ids),
             "stale_trace_ids": list(self.stale_trace_ids),
@@ -62,6 +69,9 @@ class IterationReport:
             "rejections_ref": self.rejections_ref,
             "resumed": self.resumed,
         }
+        if self.decision is not None:
+            value["decision"] = self.decision
+        return value
 
 
 class Hooks:

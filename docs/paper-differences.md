@@ -32,6 +32,11 @@ Each is a package decision, not fidelity. Change any of them by configuration or
 | Cycle policy default | `repair`: cycle-closing back edges found by a deterministic DFS are removed before validation and reported as `cycle_repaired` warnings (App. B.6 describes exactly this repair). `allow` skips it | B3 |
 | `delete_edges` / `delete_nodes` naming something absent | A warning (`no_such_edge`, `no_such_node`), not a failure | B2 |
 | Diagnostic codes beyond A6's list | `missing_sentinel` (no `Start`/`End`), `missing_guidance` (warning, refiner rule 3), `unknown_action` (warning, B4), `unknown_attribute` (warning), `cycle_repaired` (warning), `no_such_edge` / `no_such_node` (warnings), `skeleton_completed` / `type_defaulted` / `relation_defaulted` (human-input warnings) | A6, B2, G1a |
+| What a gate's equivalent / unresolved / unmeasured / invalid comparison means for later proposals | It proves nothing, so it does **not** feed duplicate refusal: only measured rejections (scalar gates, or disposition `rejected`) block a re-proposal | `RejectionEntry.measured_rejection`, F3 |
+| Intervals for report-only metrics | Computed at the same per-interval alpha as the optimized metrics, labelled informational, never decisive and not counted in the alpha allocation `M` | `ObjectiveGate` |
+| Where the objective and decisions reach the refiner | Inside the two slots that are already the package's to fill: the frozen objective heads the rejected-candidates slot, per-metric comparisons follow each entry, per-trace `measured:` lines sit in the trajectories slot. The App. B.5 prompt lines stay verbatim | `RejectionMemory.render_for_refiner`, `Trace.rendered` |
+| Persisting the gate's feedback in scalar mode | Every gated round records `Decision.feedback` (for the scalar gates: the two scores and the verdict) with `baseline_ref` / `candidate_ref` on the rejection entry, the iteration report and the accepted revision's meta, so custom-gate feedback survives too (REQ-016). Scalar renderings are unchanged: the headline and `rejections.md` still print the validation-versus-retained scores, never a disposition | `RejectionEntry.decision`, §2.16 |
+| Baseline after a crash that followed an acceptance | On resume, when the pending checkpoint's candidate is the head and the head moved since the checkpoint, the recorded candidate evaluation is the baseline and no paid evaluation of the head runs, in scalar and objective mode alike; otherwise the head is evaluated as before | `evolve` (§2.9) |
 | Refiner mode when the host does not say | `auto`: `scratch_incremental` when the head is the skeleton (exactly `{Start, End}` and one edge), else `static_incremental` | E4 |
 | Duplicate `(source, relation, target)` triples | Invalid (`duplicate_edge`); several relations between the same endpoints are valid, as the `delete_edges` semantics imply | A5 |
 
@@ -102,8 +107,9 @@ Paper: every structurally valid candidate is evaluated. Package: a candidate who
 earlier rejected candidate's is recorded as `duplicate_candidate` and skips validation. The comparison runs **after**
 `GraphStore.propose`, on the host's materialised graph, because §2.10 makes the host's candidate canonical and that is
 also the digest rejection memory records; comparing the module's pre-materialisation digest would never match for a
-host that normalises. Structural failures carry no candidate graph (App. B.6: "G_k^cand may be unavailable"), so in
-practice only gate rejections are matched. Why: validation is the expensive step (Alg. 1 l.15); paying it twice for
+host that normalises. A refiner-side structural failure usually carries no candidate graph (App. B.6: "G_k^cand may be
+unavailable") and cannot match; a structural failure of the host's materialised candidate records its digest and does.
+An objective gate's equivalent, unresolved, unmeasured or invalid comparison proved nothing and never blocks (§0). Why: validation is the expensive step (Alg. 1 l.15); paying it twice for
 the same graph buys nothing, and the paper's own motivation for rejection memory is that refiners repeat themselves.
 
 ### 2.6 Accepted rounds join rejection memory
@@ -208,12 +214,37 @@ team adopting the method usually has a task description and a few solved example
 traces; without this the only options are an expert's hand-written file or rounds of scratch evolution from
 `Start → End`.
 
+### 2.20 Quality and cost objectives
+Paper: one scalar validation score and the `>=` rule (eq. 5). Package: an opt-in `ObjectiveGate` over an
+`ObjectiveSpec` (ordered `MetricSpec`s with unit, direction, finite bounds, minimum meaningful improvement,
+equivalence and non-regression margins, optional absolute mean floor and ceiling, optimize or report-only role; mode
+`lexicographic` or `pareto`; comparison error budget `alpha`; minimum independent paired units) and an
+`ObjectiveContext` (objective digest, evaluation design, evaluator version, cohort, immutable expected task ids,
+budget profile, evidence partition, per-metric measurement basis). Hosts put structured observations on
+`TaskOutcome.metrics` and the context on `Evaluation.objective_context`. The gate refuses any context mismatch,
+incomplete or duplicated pairing, non-finite or out-of-bound value, and a deferred evaluation before it compares; then
+checks absolute constraints on candidate means; then applies the mode rule over dependency-free two-sided Hoeffding
+intervals (`paired_hoeffding_v1`: radius `width * sqrt(log(2/alpha_interval) / (2 n))`, `alpha_interval = alpha / M`
+with `M` fixed for the whole objective). Six dispositions (`accepted`, `rejected`, `equivalent`, `unresolved`,
+`unmeasured`, `invalid`) with stable reason codes and per-metric original-unit means and oriented intervals are
+returned in `Decision.feedback` and persisted with rejection memory, iteration reports and the accepted revision.
+Under this gate "all metrics equivalent" **retains the incumbent**, the opposite of eq. 5's tie acceptance; the
+identity probe never stops the run, so perfect quality does not end cost optimisation. Zero equivalence margin makes
+`equivalent` unreachable on finite samples: a metric can then only be passed by demonstrated improvement, which is
+documented behaviour, not a defect. The uncertainty guarantee is for one fixed candidate and a predeclared paired
+comparison on independent units; reusing the same validation tasks across proposals is a search, hosts own
+qualification evidence, and acceptance selects a development graph only. Checkpoints written under an objective are
+bound to its digests and refused under any other; a pending legacy checkpoint is refused in objective mode with a
+message naming the workspace, never relabelled or deleted. Why: production hosts must hold quality while lowering
+measured resource use, and must be able to say afterwards exactly which metric decided; a single scalar or a hidden
+weighting cannot do either.
+
 ## 3. Deliberately unchanged
 
 - The refiner is one single-shot JSON call: no ReAct proposer, no tools, no maintainer, no pruner.
 - Tool-catalog membership of `ACTION` nodes is a prompt rule, not a structural check (App. B.6). `available_tools`
   only warns.
-- The gate is `>=`. Ties are accepted.
+- The gate is `>=`. Ties are accepted (scalar mode; the opt-in objective gate retains the incumbent on equivalence, §2.20).
 - The graph never changes inside an episode.
 - Rejection memory is never rolled back or truncated by the loop.
 - The one-time modes commit the refiner's output without a gate, exactly as the paper's ablation does, and are only

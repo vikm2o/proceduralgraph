@@ -10,7 +10,18 @@ provider-agnostic, budgeted, resumable. See README.md.
 from .config import Budget, EvolveConfig
 from .documents import SCHEMA_VERSION, HeadMoved, Revision, canonical_json, digest
 from .edits import EditError, EditSet, prepare_candidate, repair_cycles, unified_diff
-from .gates import Decision, Evaluation, Evaluator, Gate, PairedGate, StrictImprovementGate, TieAcceptingGate
+from .gates import (
+    DECISION_SCHEMA_VERSION,
+    DISPOSITIONS,
+    Decision,
+    Evaluation,
+    Evaluator,
+    Gate,
+    ObjectiveGate,
+    PairedGate,
+    StrictImprovementGate,
+    TieAcceptingGate,
+)
 from .graph import (
     DEFAULT_ATTRIBUTE_FIELDS,
     DEFAULT_NODE_TYPES,
@@ -36,6 +47,15 @@ from .model import (
     TextPart,
     ToolInvocation,
     ToolSpec,
+)
+from .objectives import (
+    Interval,
+    MetricSpec,
+    ObjectiveContext,
+    ObjectiveError,
+    ObjectiveSpec,
+    hoeffding_radius,
+    paired_hoeffding_v1,
 )
 from .redaction import EMAIL, Redactor, redact_trace, regex_redactor
 from .rejections import RejectionEntry, RejectionMemory
@@ -73,7 +93,7 @@ from .traces import (
     tail,
 )
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __author__ = "Vikash Ranjan (CTO, styls.ai)"
 
 __all__ = [
@@ -84,6 +104,8 @@ __all__ = [
     "END",
     "SCHEMA_VERSION",
     "START",
+    "DECISION_SCHEMA_VERSION",
+    "DISPOSITIONS",
     "BootstrapResult",
     "Budget",
     "BudgetExceeded",
@@ -111,15 +133,21 @@ __all__ = [
     "HookedModel",
     "Hooks",
     "ImagePart",
+    "Interval",
     "IterationReport",
     "Localizer",
     "MemoryRevisionStore",
+    "MetricSpec",
     "ModelRequest",
     "ModelResponse",
     "Neighborhood",
     "Node",
     "NullCheckpointStore",
     "NullTraceStore",
+    "ObjectiveContext",
+    "ObjectiveError",
+    "ObjectiveGate",
+    "ObjectiveSpec",
     "PairedGate",
     "Redactor",
     "Refiner",
@@ -154,6 +182,8 @@ __all__ = [
     "evolve",
     "evolve_sync",
     "export_workspace",
+    "hoeffding_radius",
+    "paired_hoeffding_v1",
     "prepare_candidate",
     "redact_trace",
     "refine_once",
