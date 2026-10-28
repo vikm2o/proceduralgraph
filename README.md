@@ -235,4 +235,4 @@ uv run python examples/filesystem_toy.py ./toy-workspace
 uv build -o dist
 ```
 
-Written by [Vikash Ranjan](https://www.linkedin.com/in/vikash-ranjan-stylsai/), CTO, [styls.ai](https://styls.ai). Apache-2.0.
+Written by [Vikash Ranjan](https://www.linkedin.com/in/ranjan-vikash/), CTO, [styls.ai](https://styls.ai). Apache-2.0.
